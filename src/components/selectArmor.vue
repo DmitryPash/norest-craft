@@ -1,0 +1,35 @@
+<script setup>
+import { computed, ref } from "vue";
+import { useArmorStore } from "../store/armorStore";
+import { useArmoreSelection } from "../composables/useArmorSelection";
+
+const {
+  armorType,
+  armorBase,
+  onSelectBase,
+  onSelectType,
+  currentArmor,
+  armorEnchantment,
+  onSelectEnchantment,
+} = useArmoreSelection();
+</script>
+
+<template>
+  <div class="armors">
+    <button v-for="type in armorType" :key="type" @click="onSelectType(type)">
+      {{ type }}
+    </button>
+    <br /><br />
+    <button v-for="base in armorBase" :key="base" @click="onSelectBase(base)">
+      {{ base }}
+    </button>
+    <br /><br />
+    <button
+      v-for="ench in armorEnchantment"
+      :key="base"
+      @click="onSelectEnchantment(ench)"
+    >
+      {{ ench }}
+    </button>
+  </div>
+</template>
