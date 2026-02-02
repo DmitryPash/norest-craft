@@ -1,7 +1,7 @@
 import { ref, computed } from "vue";
 import enchantsJson from "../assets/data/ench.json";
 import { useArmorStore } from "../store/armorStore";
-import type { EnchantmentType } from "../type/armor";
+import type { SelectedEnchant } from "../type/enchant";
 import { useEnchantmentStore } from "../store/enchantmentStore";
 
 export function useEnchantmentSelection() {
@@ -9,6 +9,9 @@ export function useEnchantmentSelection() {
   const enchantmentStore = useEnchantmentStore();
 
   const currentArmor = computed(() => armorStore.getArmor());
+
+  // prettier-ignore
+  //   const selectedEnchantments = computed(() => enchantmentStore.selectedEnchantments);
 
   const search = ref("");
 
@@ -86,10 +89,20 @@ export function useEnchantmentSelection() {
     return result;
   });
 
-  function selectEnchant(ench: EnchantmentType) {
-    // Здесь сохраняем конкретное зачарование в стор, если нужно
-    // store.setSelectedEnchant(ench)
+  function removeEnchant(enchantName: string) {
+    enchantmentStore.removeEnchantment(enchantName);
 
+    // console.log("Удалено зачарование:", enchantName);
+    console.log("Текущий список:", enchantmentStore.selectedEnchantments);
+  }
+
+  function clearAllEnch() {
+    enchantmentStore.clearEnchantments();
+  }
+
+  function selectEnchant(ench: SelectedEnchant) {
+    console.log("ench = ", ench);
+    // Здесь сохраняем конкретное зачарование в стор, если нужно
     enchantmentStore.addEnchantment(ench);
 
     console.log("Выбрано зачарование:", ench);
@@ -100,5 +113,7 @@ export function useEnchantmentSelection() {
     search,
     filteredEnchants,
     selectEnchant,
+    removeEnchant,
+    clearAllEnch,
   };
 }

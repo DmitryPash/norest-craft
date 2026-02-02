@@ -1,64 +1,48 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useArmorStore } from "./armorStore";
+import type { EnchantmentType, SelectedEnchant } from "../type/enchant";
 
 export const useEnchantmentStore = defineStore("enchantment", () => {
   const armorStore = useArmorStore();
-  // Массив выбранных зачарований
-  const selectedEnchantments = ref<string[]>([]);
 
-  // Текущая выбранная категория зачарований (magic / plagued / curse и т.д.)
+  const selectedEnchantments = ref<SelectedEnchant[]>([]);
+
   const currentCategory = computed(
     () => armorStore.getArmor()?.enchantment ?? null,
   );
 
-  // Максимальное количество зачарований в зависимости от категории
   const maxEnchantments = computed(() => {
-    if (currentCategory.value === "magic") return 3;
-    if (currentCategory.value === "plagued") return 4;
-
-    return 0; // по умолчанию — ничего нельзя выбрать
+    const cat = currentCategory.value;
+    if (cat === "magic") return 3;
+    if (cat === "plagued") return 4;
+    return 0;
   });
 
   const currentCount = computed(() => selectedEnchantments.value.length);
-
   const canAddMore = computed(() => currentCount.value < maxEnchantments.value);
 
-  // Добавить зачарование
-  function addEnchantment(enchantName: string) {
-    if (!canAddMore.value) {
-      console.warn(
-        `Нельзя добавить больше ${maxEnchantments.value} зачарований для категории ${currentCategory.value}`,
-      );
-      return;
-    }
+  function addEnchantment(ench: SelectedEnchant) {
+    if (!canAddMore.value) return;
 
-    if (selectedEnchantments.value.includes(enchantName)) {
-      console.warn(`"${enchantName}" уже выбрано`);
+    if (selectedEnchantments.value.some((e) => e.enchant === ench.enchant))
       return;
-    }
 
-    selectedEnchantments.value.push(enchantName);
+    selectedEnchantments.value.push({
+      group: ench.group,
+      enchant: ench.enchant,
+    });
   }
 
-  function removeEnchantment(ench: string) {
-    const index = selectedEnchantments.value.indexOf(ench);
-    if (index !== -1) {
-      selectedEnchantments.value.splice(index, 1);
-    }
+  function removeEnchantment(enchantName: string) {
+    selectedEnchantments.value = selectedEnchantments.value.filter(
+      (item) => item.enchant !== enchantName,
+    );
   }
 
   function clearEnchantments() {
     selectedEnchantments.value = [];
   }
-
-  const currentState = computed(() => ({
-    category: currentCategory.value,
-    selected: selectedEnchantments.value,
-    count: currentCount.value,
-    max: maxEnchantments.value,
-    canAdd: canAddMore.value,
-  }));
 
   return {
     selectedEnchantments,
@@ -66,7 +50,6 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
     maxEnchantments,
     currentCount,
     canAddMore,
-    currentState,
 
     addEnchantment,
     removeEnchantment,

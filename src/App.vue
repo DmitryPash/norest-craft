@@ -1,9 +1,6 @@
 <script setup>
 import SelectArmor from "./components/selectArmor.vue";
 import SelectEnchantment from "./components/selectEnchantment.vue";
-import { useEnchantmentStore } from "./store/enchantmentStore";
-
-const enchantnentStore = useEnchantmentStore();
 </script>
 
 <template>
@@ -11,7 +8,6 @@ const enchantnentStore = useEnchantmentStore();
     <h1>NO REST CRAFT</h1>
   </div>
   <SelectArmor></SelectArmor>
-  {{ enchantnentStore.selectedEnchantments }}
   <SelectEnchantment></SelectEnchantment>
 </template>
 

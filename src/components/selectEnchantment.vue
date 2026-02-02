@@ -1,7 +1,7 @@
 <template>
   <div class="enchant-filter">
     <h2>Зачарования</h2>
-
+    <button @click="clearAllEnch">clear</button>
     <!-- Показываем текущий выбор -->
     <div
       class="currentArmor-choice"
@@ -17,6 +17,21 @@
         Категория:
         <strong>{{ currentArmor.enchantment || "не выбрана" }}</strong>
       </div>
+      <ul>
+        <li
+          v-for="enchantment in enchantmentStore.selectedEnchantments"
+          :key="enchantment.enchant"
+        >
+          {{ enchantment.enchant }}
+          <button
+            @click="removeEnchant(enchantment.enchant)"
+            class="clear-btn"
+            :title="`Удалить ${enchantment.enchant}`"
+          >
+            ❌
+          </button>
+        </li>
+      </ul>
     </div>
 
     <!-- Поиск -->
@@ -70,9 +85,18 @@
 import { computed, ref } from "vue";
 import { useArmorStore } from "../store/armorStore";
 import { useEnchantmentSelection } from "../composables/useEnchantmentSelection";
+import { useEnchantmentStore } from "../store/enchantmentStore";
 
-const { currentArmor, search, filteredEnchants, selectEnchant } =
-  useEnchantmentSelection();
+const {
+  currentArmor,
+  search,
+  filteredEnchants,
+  selectEnchant,
+  removeEnchant,
+  clearAllEnch,
+} = useEnchantmentSelection();
+
+const enchantmentStore = useEnchantmentStore();
 </script>
 
 <style scoped>

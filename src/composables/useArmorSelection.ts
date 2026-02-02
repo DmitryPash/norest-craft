@@ -1,26 +1,27 @@
 import { computed } from "vue";
 import { useArmorStore } from "../store/armorStore";
-import type { ArmorBase, ArmorType, EnchantmentType } from "../type/armor";
+import type { ArmorBase, ArmorType } from "../type/armor";
+import type { EnchantmentType } from "../type/enchant";
 
 export function useArmoreSelection() {
-  const store = useArmorStore();
+  const armorStore = useArmorStore();
 
   const armorType = ["cloth", "leather", "mail", "plate"] as const;
   const armorBase = ["helmet", "chest", "pants", "gloves"] as const;
   const armorEnchantment = ["commmon", "magic", "plagued"] as const;
 
-  const currentArmor = computed(() => store.getArmor());
+  const currentArmor = computed(() => armorStore.getArmor());
 
   function onSelectType(type: ArmorType) {
-    store.setArmorType(type);
+    armorStore.setArmorType(type);
   }
 
   function onSelectBase(base: ArmorBase) {
-    store.setArmorBase(base);
+    armorStore.setArmorBase(base);
   }
 
   function onSelectEnchantment(ench: EnchantmentType) {
-    store.setArmorEnchantment(ench);
+    armorStore.setArmorEnchantment(ench);
   }
 
   return {
