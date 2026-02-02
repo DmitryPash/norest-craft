@@ -85,7 +85,6 @@
 import { computed, ref } from "vue";
 import { useArmorStore } from "../store/armorStore";
 import { useEnchantmentSelection } from "../composables/useEnchantmentSelection";
-import { useEnchantmentStore } from "../store/enchantmentStore";
 
 const {
   currentArmor,
@@ -94,9 +93,8 @@ const {
   selectEnchant,
   removeEnchant,
   clearAllEnch,
+  enchantmentStore,
 } = useEnchantmentSelection();
-
-const enchantmentStore = useEnchantmentStore();
 </script>
 
 <style scoped>

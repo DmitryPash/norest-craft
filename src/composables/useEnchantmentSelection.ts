@@ -10,9 +10,6 @@ export function useEnchantmentSelection() {
 
   const currentArmor = computed(() => armorStore.getArmor());
 
-  // prettier-ignore
-  //   const selectedEnchantments = computed(() => enchantmentStore.selectedEnchantments);
-
   const search = ref("");
 
   // Сопоставление частей из стора → ключей в JSON
@@ -101,7 +98,6 @@ export function useEnchantmentSelection() {
   }
 
   function selectEnchant(ench: SelectedEnchant) {
-    console.log("ench = ", ench);
     // Здесь сохраняем конкретное зачарование в стор, если нужно
     enchantmentStore.addEnchantment(ench);
 
@@ -115,5 +111,6 @@ export function useEnchantmentSelection() {
     selectEnchant,
     removeEnchant,
     clearAllEnch,
+    enchantmentStore,
   };
 }

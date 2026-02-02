@@ -28,10 +28,17 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
     if (selectedEnchantments.value.some((e) => e.enchant === ench.enchant))
       return;
 
+    if (selectedEnchantments.value.some((e) => e.group === ench.group)) {
+      console.warn(`Группа "${ench.group}" уже занята другим зачарованием`);
+      return;
+    }
+
     selectedEnchantments.value.push({
       group: ench.group,
       enchant: ench.enchant,
     });
+
+    console.log("selectedEnchantments.value = ", selectedEnchantments.value);
   }
 
   function removeEnchantment(enchantName: string) {
