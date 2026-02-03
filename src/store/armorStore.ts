@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { ArmorBase, ArmorType, EnchantmentType } from "../type/armor";
+import type { ArmorBase, ArmorType } from "../type/armor";
+import type {EnchantmentType} from '../type/enchant'
 
 export const useArmorStore = defineStore("armor", () => {
   const selectedArmorType = ref<ArmorType | null>(null);

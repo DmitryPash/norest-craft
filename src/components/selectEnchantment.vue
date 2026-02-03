@@ -7,31 +7,8 @@
       class="currentArmor-choice"
       v-if="currentArmor.type || currentArmor.base || currentArmor.enchantment"
     >
-      <div>
-        Тип: <strong>{{ currentArmor.type || "не выбран" }}</strong>
-      </div>
-      <div>
-        Часть: <strong>{{ currentArmor.base || "не выбрана" }}</strong>
-      </div>
-      <div>
-        Категория:
-        <strong>{{ currentArmor.enchantment || "не выбрана" }}</strong>
-      </div>
-      <ul>
-        <li
-          v-for="enchantment in enchantmentStore.selectedEnchantments"
-          :key="enchantment.enchant"
-        >
-          {{ enchantment.enchant }}
-          <button
-            @click="removeEnchant(enchantment.enchant)"
-            class="clear-btn"
-            :title="`Удалить ${enchantment.enchant}`"
-          >
-            ❌
-          </button>
-        </li>
-      </ul>
+
+      <ResultCraft></ResultCraft>
     </div>
 
     <!-- Поиск -->
@@ -85,6 +62,7 @@
 import { computed, ref } from "vue";
 import { useArmorStore } from "../store/armorStore";
 import { useEnchantmentSelection } from "../composables/useEnchantmentSelection";
+import ResultCraft from "./resultCraft.vue";
 
 const {
   currentArmor,
@@ -95,6 +73,7 @@ const {
   clearAllEnch,
   enchantmentStore,
 } = useEnchantmentSelection();
+
 </script>
 
 <style scoped>
