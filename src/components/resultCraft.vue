@@ -14,15 +14,16 @@
 
     <ul>
         <li
-          v-for="enchantment in enchantmentStore.selectedEnchantments"
+          v-for="(enchantment, index) in enchantmentStore.selectedEnchantments"
           :key="enchantment.enchant"
-          @click="useOrb(enchantment)"
+          @click="useOrb(enchantment, index)"
           style="border: 1px solid red; cursor: pointer; margin-bottom: 8px;"
         >
+          {{ index }} |
           {{ enchantment.group }} |
           {{ enchantment.enchant }}
           <button
-            @click="removeEnchant(enchantment.enchant)"
+            @click.stop="removeEnchant(enchantment.enchant)"
             class="clear-btn"
             :title="`Удалить ${enchantment.enchant}`"
           >

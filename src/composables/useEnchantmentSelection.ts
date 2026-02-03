@@ -4,6 +4,7 @@ import { useArmorStore } from "../store/armorStore";
 import type { SelectedEnchant } from "../type/enchant";
 import { useEnchantmentStore } from "../store/enchantmentStore";
 import { useOrbStore } from "../store/orbStore";
+import { partMap } from "../const/Const";
 
 export function useEnchantmentSelection() {
   const armorStore = useArmorStore();
@@ -11,18 +12,10 @@ export function useEnchantmentSelection() {
   const orbStore = useOrbStore();
 
   const currentArmor = computed(() => armorStore.getArmor());
-  const isSelectedOrb = computed(() => orbStore.isOrbSelected)
   const nameOrb = computed(() => orbStore.nameOrb);
 
   const search = ref("");
 
-  // Сопоставление частей из стора → ключей в JSON
-  const partMap = {
-    helmet: "helmet",
-    chest: "chest",
-    pants: "pants",
-    gloves: "gloves",
-  };
 
   const filteredEnchants = computed(() => {
     const { type, base, enchantment } = currentArmor.value;
@@ -108,67 +101,67 @@ export function useEnchantmentSelection() {
     enchantmentStore.removeEnchantment(enchantName);
   }
 
-  function addRandomEnchantReplacement() {
-  const MAX_ATTEMPTS = 50;
+  function addRandomEnchantReplacement(positionIndex?: number) {
+    const MAX_ATTEMPTS = 50;
 
-  let attempts = 0;
+    let attempts = 0;
 
-  while (attempts < MAX_ATTEMPTS) {
-    attempts++;
+    while (attempts < MAX_ATTEMPTS) {
+      attempts++;
 
-    // 1. Собираем ВСЕ видимые зачарования (из всех групп, всех частей)
-    const allVisible: SelectedEnchant[] = Object.values(filteredEnchants.value)
-      .flatMap((category:Record<string, SelectedEnchant[]>) => Object.values(category))
-      .flat();
+      // 1. Собираем ВСЕ видимые зачарования (из всех групп, всех частей)
+      const allVisible: SelectedEnchant[] = Object.values(filteredEnchants.value)
+        .flatMap((category:Record<string, SelectedEnchant[]>) => Object.values(category))
+        .flat();
 
-    if (allVisible.length === 0) {
-      console.warn("Нет вообще никаких видимых зачарований");
+      if (allVisible.length === 0) {
+        console.warn("Нет вообще никаких видимых зачарований");
+        return;
+      }
+
+      // 2. Берём случайное
+      const randomIndex = Math.floor(Math.random() * allVisible.length);
+      const candidate = allVisible[randomIndex];
+
+      // 3. Проверяем, можно ли добавить именно это
+      if (!enchantmentStore.canAddMore) {
+        return;
+      }
+
+      if (!candidate) {
+        return;
+      }
+
+      // Уже есть точно такое же зачарование?
+      if (enchantmentStore.selectedEnchantments.some(e => e.enchant === candidate.enchant)) {
+        continue;
+      }
+
+      // Самое важное: группа уже занята на предмете?
+      if (enchantmentStore.selectedEnchantments.some(e => e.group === candidate.group)) {
+        continue;
+      }
+
+      // Всё ок → добавляем
+      enchantmentStore.addEnchantment(candidate, positionIndex);
       return;
     }
 
-    // 2. Берём случайное
-    const randomIndex = Math.floor(Math.random() * allVisible.length);
-    const candidate = allVisible[randomIndex];
-
-    // 3. Проверяем, можно ли добавить именно это
-    if (!enchantmentStore.canAddMore) {
-      return;
-    }
-
-    if (!candidate) {
-      return;
-    }
-
-    // Уже есть точно такое же зачарование?
-    if (enchantmentStore.selectedEnchantments.some(e => e.enchant === candidate.enchant)) {
-      continue;
-    }
-
-    // Самое важное: группа уже занята на предмете?
-    if (enchantmentStore.selectedEnchantments.some(e => e.group === candidate.group)) {
-      continue;
-    }
-
-    // Всё ок → добавляем
-    enchantmentStore.addEnchantment(candidate);
-    return;
+    console.warn(`Не удалось подобрать случайное зачарование после ${MAX_ATTEMPTS} попыток (возможно, почти все группы уже заняты)`);
   }
-
-  console.warn(`Не удалось подобрать случайное зачарование после ${MAX_ATTEMPTS} попыток (возможно, почти все группы уже заняты)`);
-}
 
   function clearAllEnch() {
     enchantmentStore.clearEnchantments();
   }
 
-  function useOrb(ench: SelectedEnchant) {
+  function useOrb(ench: SelectedEnchant, positionIndex?: number) {
     console.log(ench)
 
     // *** Логика для "plague" сферы ***//
     if(nameOrb.value === 1) {
       removeEnchant(ench.enchant);
 
-      addRandomEnchantReplacement()
+      addRandomEnchantReplacement(positionIndex)
     }
   }
 

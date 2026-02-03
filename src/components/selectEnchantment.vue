@@ -69,7 +69,6 @@ const {
   search,
   filteredEnchants,
   selectEnchant,
-  removeEnchant,
   clearAllEnch,
   enchantmentStore,
 } = useEnchantmentSelection();

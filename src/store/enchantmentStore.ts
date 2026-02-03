@@ -22,7 +22,7 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
   const currentCount = computed(() => selectedEnchantments.value.length);
   const canAddMore = computed(() => currentCount.value < maxEnchantments.value);
 
-  function addEnchantment(ench: SelectedEnchant) {
+  function addEnchantment(ench: SelectedEnchant, positionIndex?: number) {
     if (!canAddMore.value) return;
 
     if (selectedEnchantments.value.some((e) => e.enchant === ench.enchant))
@@ -30,6 +30,15 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
 
     if (selectedEnchantments.value.some((e) => e.group === ench.group)) {
       console.warn(`Группа "${ench.group}" уже занята другим зачарованием`);
+      return;
+    }
+
+    if(positionIndex >= 0) {
+      selectedEnchantments.value.splice(positionIndex, 0 ,{
+        group: ench.group,
+        enchant: ench.enchant,
+      });
+
       return;
     }
 
