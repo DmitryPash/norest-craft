@@ -3,18 +3,13 @@ import enchantsJson from "../assets/data/ench.json" assert {type: "json"};
 import { useArmorStore } from "../store/armorStore";
 import type { SelectedEnchant } from "../type/enchant";
 import { useEnchantmentStore } from "../store/enchantmentStore";
-import { useOrbStore } from "../store/orbStore";
-import { partMap, orbNameMap } from "../const/Const";
-import type {EnchantmentType} from '../type/enchant';
+import { partMap } from "../const/Const";
 
 export function useEnchantmentSelection() {
   const armorStore = useArmorStore();
   const enchantmentStore = useEnchantmentStore();
-  const orbStore = useOrbStore();
 
   const currentArmor = computed(() => armorStore.getArmor());
-  const nameOrb = computed(() => orbStore.nameOrb);
-
   const search = ref("");
 
 
@@ -69,6 +64,63 @@ export function useEnchantmentSelection() {
 
     // Если в категории ничего не осталось — возвращаем пустой объект
     if (Object.keys(result[catKey]).length === 0) {
+      return {};
+    }
+
+    return result;
+  });
+
+  const curseEnchants = computed(() => {
+    // Если в JSON нет категории "curse" — возвращаем пустой объект
+    if (!("curse" in enchantsJson)) {
+      console.warn('Категория "curse" не найдена в enchants.json');
+      return {};
+    }
+
+    const curseCategory = enchantsJson["curse" as keyof typeof enchantsJson];
+
+    if (!curseCategory) return {};
+
+    const result: Record<string, Record<string, SelectedEnchant[]>> = {
+      curse: {},
+    };
+
+    // Определяем, какие части показывать (та же логика, что и в filteredEnchants)
+    let allowedParts: string[] = [];
+
+    const { base } = currentArmor.value;
+
+    if (base) {
+      const mappedPart = partMap[base as keyof typeof partMap];
+      if (mappedPart && mappedPart in curseCategory) {
+        allowedParts = [mappedPart];
+      }
+    } else {
+      // если часть не выбрана — показываем все доступные части из curse
+      allowedParts = Object.keys(curseCategory);
+    }
+
+    // Проходим по нужным частям
+    for (const part of allowedParts) {
+      let list = curseCategory[part as keyof typeof curseCategory] || [];
+
+      // Применяем поиск, если пользователь что-то ввёл
+      if (search.value.trim()) {
+        const q = search.value.toLowerCase();
+        list = list.filter(
+          (e) =>
+            e.enchant.toLowerCase().includes(q) ||
+            e.group.toLowerCase().includes(q)
+        );
+      }
+
+      if (list.length > 0) {
+        result.curse[part] = list;
+      }
+    }
+
+    // Если после фильтра ничего не осталось — возвращаем пустой объект
+    if (Object.keys(result.curse).length === 0) {
       return {};
     }
 
@@ -144,25 +196,30 @@ export function useEnchantmentSelection() {
       }
 
       // Всё ок → добавляем
-      enchantmentStore.addEnchantment(candidate, positionIndex);
+      enchantmentStore.addEnchantment({ench: candidate, positionIndex});
       return;
     }
 
     console.warn(`Не удалось подобрать случайное зачарование после ${MAX_ATTEMPTS} попыток (возможно, почти все группы уже заняты)`);
   }
 
+  function addRandomCurse() {
+    // ** думаю **//
+  }
+
   function clearAllEnch() {
     enchantmentStore.clearEnchantments();
   }
 
-  function selectEnchant(ench: SelectedEnchant) {
-    enchantmentStore.addEnchantment(ench);
+  function selectEnchant(ench: SelectedEnchant, isCurse?: boolean) {
+    enchantmentStore.addEnchantment({ench, isCurse});
   }
 
   return {
     currentArmor,
     search,
     filteredEnchants,
+    curseEnchants,
     selectEnchant,
     removeEnchant,
     addRandomEnchantReplacement,

@@ -46,7 +46,6 @@
         </div>
       </div>
     </div>
-
     <div v-else class="no-matches">
       <p v-if="currentArmor.enchantment">
         В категории <strong>{{ currentArmor.enchantment }}</strong>
@@ -55,24 +54,53 @@
       </p>
       <p v-else>Выберите категорию зачарований (common / magic / plagued)</p>
     </div>
+
+    <!-- Показываем только когда вещь категорией plagued -->
+    <div v-if="currentArmor['enchantment'] === 'plagued'" class="curse">
+      <div
+        v-for="(curseData, categoryKey) in curseEnchants"
+        :key="categoryKey"
+        class="category"
+      >
+        <h3>{{ categoryKey }}</h3>
+
+        <div
+          v-for="(curses, partKey) in curseData"
+          :key="partKey"
+          class="part-section"
+        >
+          <h4>{{ partKey }}</h4>
+
+          <div
+            v-for="curse in curses"
+            :key="curse.enchant"
+            class="enchant-item"
+            @click="selectEnchant(curse, true)"
+          >
+            <div class="enchant-text">{{ curse.enchant }}</div>
+            <div class="group-text">Группа: {{ curse.group }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
-import { useArmorStore } from "../store/armorStore";
 import { useEnchantmentSelection } from "../composables/useEnchantmentSelection";
 import ResultCraft from "./resultCraft.vue";
+import { useArmoreSelection } from "../composables/useArmorSelection";
 
 const {
   currentArmor,
   search,
   filteredEnchants,
+  curseEnchants,
   selectEnchant,
   clearAllEnch,
   enchantmentStore,
 } = useEnchantmentSelection();
-
 </script>
 
 <style scoped>

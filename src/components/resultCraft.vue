@@ -17,7 +17,7 @@
           v-for="(enchantment, index) in enchantmentStore.selectedEnchantments"
           :key="enchantment.enchant"
           @click="useSkyOrb(enchantment, index)"
-          style="border: 1px solid red; cursor: pointer; margin-bottom: 8px;"
+          style="border: 1px solid red; cursor: pointer; margin-bottom: 8px;user-select: none;"
         >
           {{ index }} |
           {{ enchantment.group }} |
