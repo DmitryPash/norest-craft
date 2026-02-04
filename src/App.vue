@@ -6,6 +6,7 @@ import SelectEnchantment from "./components/selectEnchantment.vue";
 <template>
   <div>
     <h1>NO REST CRAFT</h1>
+    <p> Hello </p>
   </div>
   <SelectArmor></SelectArmor>
   <SelectEnchantment></SelectEnchantment>
