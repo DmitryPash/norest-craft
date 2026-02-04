@@ -2,7 +2,6 @@ import { computed } from "vue";
 import { useArmorStore } from "../store/armorStore";
 import type { ArmorBase, ArmorType } from "../type/armor";
 import type { EnchantmentType } from "../type/enchant";
-import { partMap } from "../const/Const";
 
 export function useArmoreSelection() {
   const armorStore = useArmorStore();

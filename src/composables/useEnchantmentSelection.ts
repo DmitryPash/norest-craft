@@ -4,7 +4,8 @@ import { useArmorStore } from "../store/armorStore";
 import type { SelectedEnchant } from "../type/enchant";
 import { useEnchantmentStore } from "../store/enchantmentStore";
 import { useOrbStore } from "../store/orbStore";
-import { partMap } from "../const/Const";
+import { partMap, orbNameMap } from "../const/Const";
+import type {EnchantmentType} from '../type/enchant';
 
 export function useEnchantmentSelection() {
   const armorStore = useArmorStore();
@@ -154,19 +155,7 @@ export function useEnchantmentSelection() {
     enchantmentStore.clearEnchantments();
   }
 
-  function useOrb(ench: SelectedEnchant, positionIndex?: number) {
-    console.log(ench)
-
-    // *** Логика для "plague" сферы ***//
-    if(nameOrb.value === 1) {
-      removeEnchant(ench.enchant);
-
-      addRandomEnchantReplacement(positionIndex)
-    }
-  }
-
   function selectEnchant(ench: SelectedEnchant) {
-    // Здесь сохраняем конкретное зачарование в стор, если нужно
     enchantmentStore.addEnchantment(ench);
   }
 
@@ -176,8 +165,8 @@ export function useEnchantmentSelection() {
     filteredEnchants,
     selectEnchant,
     removeEnchant,
+    addRandomEnchantReplacement,
     clearAllEnch,
-    useOrb,
     enchantmentStore,
   };
 }

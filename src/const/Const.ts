@@ -1,7 +1,15 @@
 export const orbName = {
-    'noname': 0,
-    'plague': 1,
-    'magic': 2,
+    noname: 0,
+    sky: 1,
+    awakening: 2,
+    corrupting : 3,
+}
+
+export const orbNameMap = {
+    0: "noname",
+    1: "sky",
+    2: "awakening",
+    3: "corrupting",
 }
 
 export const partMap = {

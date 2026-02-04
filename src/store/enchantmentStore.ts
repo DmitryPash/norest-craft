@@ -46,8 +46,6 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
       group: ench.group,
       enchant: ench.enchant,
     });
-
-    console.log("selectedEnchantments.value = ", selectedEnchantments.value);
   }
 
   function removeEnchantment(enchantName: string) {

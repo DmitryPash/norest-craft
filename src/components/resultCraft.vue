@@ -1,9 +1,10 @@
 <template>
     <h2>Result Craft</h2>
 
-    <div>
+    <div @click="selectedOrb()" class="item" style="padding: 15px; border: 2px solid floralwhite;">
+      <div>
         Тип: <strong>{{ currentArmor.type || "не выбран" }}</strong>
-      </div>
+    </div>
       <div>
         Часть: <strong>{{ currentArmor.base || "не выбрана" }}</strong>
       </div>
@@ -11,12 +12,11 @@
         Категория:
         <strong>{{ currentArmor.enchantment || "не выбрана" }}</strong>
       </div>
-
-    <ul>
+      <ul>
         <li
           v-for="(enchantment, index) in enchantmentStore.selectedEnchantments"
           :key="enchantment.enchant"
-          @click="useOrb(enchantment, index)"
+          @click="useSkyOrb(enchantment, index)"
           style="border: 1px solid red; cursor: pointer; margin-bottom: 8px;"
         >
           {{ index }} |
@@ -32,6 +32,9 @@
         </li>
       </ul>
 
+    </div>
+
+
       <Orbs></Orbs>
 </template>
 
@@ -39,11 +42,18 @@
 import { computed, ref } from "vue";
 import { useEnchantmentSelection } from "../composables/useEnchantmentSelection";
 import Orbs from "./orbs.vue";
+import {orbNameMap} from "../const/Const"
+import { useOrbSelection } from "../composables/useOrbSelection";
 
 const {
     currentArmor,
     removeEnchant,
     enchantmentStore,
-    useOrb,
 } = useEnchantmentSelection();
+
+const {
+  useSkyOrb,
+  selectedOrb,
+} = useOrbSelection();
+
 </script>
