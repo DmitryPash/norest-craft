@@ -34,5 +34,8 @@ const {
 
 <style lang="scss">
 .armors {
+  &__type {
+    color: azure;
+  }
 }
 </style>
