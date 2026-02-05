@@ -7,7 +7,6 @@
       class="currentArmor-choice"
       v-if="currentArmor.type || currentArmor.base || currentArmor.enchantment"
     >
-
       <ResultCraft></ResultCraft>
     </div>
 

@@ -7,7 +7,15 @@ export function useArmoreSelection() {
   const armorStore = useArmorStore();
 
   const armorType = ["cloth", "leather", "mail", "plate"] as const;
-  const armorBase = ["helmet", "chest", "pants", "gloves", "weapone", "bow", "shield"] as const;
+  const armorBase = [
+    "helmet",
+    "chest",
+    "pants",
+    "gloves",
+    "weapone",
+    "bow",
+    "shield",
+  ] as const;
   const armorEnchantment = ["commmon", "magic", "plagued"] as const;
 
   const currentArmor = computed(() => armorStore.getArmor());

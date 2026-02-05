@@ -16,7 +16,12 @@ const {
 
 <template>
   <div class="armors">
-    <button v-for="type in armorType" :key="type" @click="onSelectType(type)">
+    <button
+      v-for="type in armorType"
+      :key="type"
+      @click="onSelectType(type)"
+      class="armors__type"
+    >
       {{ type }}
     </button>
     <br /><br />
@@ -26,3 +31,5 @@ const {
     <br /><br />
   </div>
 </template>
+
+<style lang="scss"></style>
