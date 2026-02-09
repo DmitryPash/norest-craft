@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useArmorStore } from "./armorStore";
 import type { AddEnchantmentOptions, SelectedEnchant } from "../type/enchant";
+import { formattedString } from "../utils/foramttedString";
 
 export const useEnchantmentStore = defineStore("enchantment", () => {
   const armorStore = useArmorStore();
@@ -28,10 +29,9 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
     const { ench, positionIndex, isCurse = false } = options;
 
     if (isCurse) {
+      console.log("curse = ===== ===== ", ench);
       isCurseExist.value = true;
       selectedCurse.value = ench;
-
-      console.log("selectedCurse = ", selectedCurse.value);
     }
 
     // Проверяем общее количество (включая curse, если оно уже есть)
@@ -55,7 +55,7 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
     // Добавляем обычное свойство
     const newEnchant = {
       group: ench.group,
-      enchant: ench.enchant,
+      enchant: formattedString(ench.enchant, ench.range, ench.percent),
     };
 
     if (typeof positionIndex === "number" && positionIndex >= 0) {
@@ -64,10 +64,8 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
         selectedEnchantments.value.length,
       );
       selectedEnchantments.value.splice(safeIndex, 0, newEnchant);
-      console.log(`Обычное свойство добавлено на позицию ${safeIndex}`);
     } else {
       selectedEnchantments.value.push(newEnchant);
-      console.log("Обычное свойство добавлено в конец");
     }
   }
 

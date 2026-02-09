@@ -49,7 +49,7 @@
         style="border: 1px solid red; cursor: pointer"
       >
         {{ enchantmentStore.selectedCurse.group }} |
-        {{ enchantmentStore.selectedCurse.enchant }}
+        {{ enchantmentStore.selectedCurse.formattedEnchant }}
       </li>
     </ul>
   </div>

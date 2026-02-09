@@ -1,6 +1,8 @@
 export interface SelectedEnchant {
   group: string;
   enchant: string;
+  range: { from: number; to: number };
+  percent: boolean;
 }
 
 export interface AddEnchantmentOptions {

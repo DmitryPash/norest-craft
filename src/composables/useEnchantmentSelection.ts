@@ -4,6 +4,7 @@ import { useArmorStore } from "../store/armorStore";
 import type { SelectedEnchant } from "../type/enchant";
 import { useEnchantmentStore } from "../store/enchantmentStore";
 import { partMap } from "../const/Const";
+import { formattedString } from "../utils/foramttedString";
 
 export function useEnchantmentSelection() {
   const armorStore = useArmorStore();
@@ -28,7 +29,12 @@ export function useEnchantmentSelection() {
 
     if (!category) return {};
 
-    const result: Record<string, any> = { [catKey]: {} };
+    const result: Record<
+      string,
+      Record<string, Array<SelectedEnchant & { formattedEnchant: string }>>
+    > = {
+      [catKey]: {},
+    };
 
     // Определяем, какие части показывать
     let allowedParts: string[] = [];
@@ -57,7 +63,14 @@ export function useEnchantmentSelection() {
       }
 
       if (list.length > 0) {
-        result[catKey][part] = list;
+        result[catKey][part] = list.map((ench) => ({
+          ...ench,
+          formattedEnchant: formattedString(
+            ench.enchant,
+            ench.range,
+            ench.percent,
+          ),
+        }));
       }
     }
 
@@ -80,7 +93,10 @@ export function useEnchantmentSelection() {
 
     if (!curseCategory) return {};
 
-    const result: Record<string, Record<string, SelectedEnchant[]>> = {
+    const result: Record<
+      string,
+      Record<string, Array<SelectedEnchant & { formattedEnchant: string }>>
+    > = {
       curse: {},
     };
 
@@ -114,7 +130,14 @@ export function useEnchantmentSelection() {
       }
 
       if (list.length > 0) {
-        result.curse[part] = list;
+        result.curse[part] = list.map((ench) => ({
+          ...ench,
+          formattedEnchant: formattedString(
+            ench.enchant,
+            ench.range,
+            ench.percent,
+          ),
+        }));
       }
     }
 
@@ -125,10 +148,6 @@ export function useEnchantmentSelection() {
 
     return result;
   });
-
-  function removeEnchant(enchantName: string) {
-    enchantmentStore.removeEnchantment(enchantName);
-  }
 
   function addRandomEnchantReplacement(positionIndex?: number) {
     const MAX_ATTEMPTS = 50;
@@ -241,6 +260,10 @@ export function useEnchantmentSelection() {
     console.warn(
       `Не удалось подобрать случайное проклятие после ${MAX_ATTEMPTS} попыток (возможно, все доступные уже выбраны)`,
     );
+  }
+
+  function removeEnchant(enchantName: string) {
+    enchantmentStore.removeEnchantment(enchantName);
   }
 
   function clearAllEnch() {
