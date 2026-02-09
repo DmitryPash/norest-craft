@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { useArmorStore } from "./armorStore";
 import type { AddEnchantmentOptions, SelectedEnchant } from "../type/enchant";
 import { formattedString } from "../utils/foramttedString";
+import { randomInt } from "../utils/random";
 
 export const useEnchantmentStore = defineStore("enchantment", () => {
   const armorStore = useArmorStore();
@@ -27,35 +28,51 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
 
   function addEnchantment(options: AddEnchantmentOptions) {
     const { ench, positionIndex, isCurse = false } = options;
-
+    console.log("ench = ", ench);
+    const rangeValue = randomInt(ench?.range.from, ench?.range.to);
     if (isCurse) {
-      console.log("curse = ===== ===== ", ench);
       isCurseExist.value = true;
-      selectedCurse.value = ench;
+      selectedCurse.value = {
+        group: ench.group,
+        enchant: formattedString({
+          text: ench.enchant,
+          range: ench.range,
+          percent: ench.percent,
+          isRandomNumber: rangeValue,
+        }),
+        rangeValue: rangeValue,
+        notFormattedString: ench.enchant,
+      };
     }
 
     // Проверяем общее количество (включая curse, если оно уже есть)
     if (!canAddMore.value) {
-      console.warn("Нельзя добавить больше зачарований — лимит достигнут");
       return;
     }
 
     // Проверяем дубликат по enchant
     if (selectedEnchantments.value.some((e) => e.enchant === ench.enchant)) {
-      console.warn(`Зачарование "${ench.enchant}" уже существует`);
       return;
     }
 
     // Проверяем занятость группы
     if (selectedEnchantments.value.some((e) => e.group === ench.group)) {
-      console.warn(`Группа "${ench.group}" уже занята`);
       return;
     }
 
     // Добавляем обычное свойство
     const newEnchant = {
       group: ench.group,
-      enchant: formattedString(ench.enchant, ench.range, ench.percent),
+      enchant: formattedString({
+        text: ench.enchant,
+        range: ench.range,
+        percent: ench.percent,
+        isRandomNumber: rangeValue,
+      }),
+      rangeValue: rangeValue,
+      notFormattedString: ench.enchant,
+      percent: ench.percent,
+      range: ench.range,
     };
 
     if (typeof positionIndex === "number" && positionIndex >= 0) {

@@ -129,14 +129,24 @@ export function useEnchantmentSelection() {
         );
       }
 
+      console.log(list);
+
+      // const rangeValue = randomInt(ench.range.from, ench.range.to);
+
       if (list.length > 0) {
         result.curse[part] = list.map((ench) => ({
           ...ench,
-          formattedEnchant: formattedString(
-            ench.enchant,
-            ench.range,
-            ench.percent,
-          ),
+          formattedEnchant: formattedString({
+            text: ench.enchant,
+            range: ench.range,
+            percent: ench.percent,
+          }),
+          randomEnchant: formattedString({
+            text: ench.enchant,
+            range: ench.range,
+            percent: ench.percent,
+            isRandomNumber: 99,
+          }),
         }));
       }
     }
@@ -206,10 +216,6 @@ export function useEnchantmentSelection() {
       enchantmentStore.addEnchantment({ ench: candidate, positionIndex });
       return;
     }
-
-    console.warn(
-      `Не удалось подобрать случайное зачарование после ${MAX_ATTEMPTS} попыток (возможно, почти все группы уже заняты)`,
-    );
   }
 
   function addRandomCurse() {
@@ -224,7 +230,6 @@ export function useEnchantmentSelection() {
       const curseCategory = curseEnchants.value?.curse;
 
       if (!curseCategory || Object.keys(curseCategory).length === 0) {
-        console.warn("Нет видимых зачарований в категории curse");
         return;
       }
 
@@ -232,7 +237,6 @@ export function useEnchantmentSelection() {
       const allVisible: SelectedEnchant[] = Object.values(curseCategory).flat();
 
       if (allVisible.length === 0) {
-        console.warn("Нет вообще никаких видимых зачарований в curse");
         return;
       }
 
