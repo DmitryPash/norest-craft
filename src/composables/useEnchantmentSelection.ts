@@ -5,10 +5,12 @@ import type { SelectedEnchant } from "../type/enchant";
 import { useEnchantmentStore } from "../store/enchantmentStore";
 import { partMap } from "../const/Const";
 import { formattedString } from "../utils/foramttedString";
+import { useOrbStore } from "../store/orbStore";
 
 export function useEnchantmentSelection() {
   const armorStore = useArmorStore();
   const enchantmentStore = useEnchantmentStore();
+  const orbStore = useOrbStore();
 
   const currentArmor = computed(() => armorStore.getArmor());
   const search = ref("");
@@ -65,11 +67,11 @@ export function useEnchantmentSelection() {
       if (list.length > 0) {
         result[catKey][part] = list.map((ench) => ({
           ...ench,
-          formattedEnchant: formattedString(
-            ench.enchant,
-            ench.range,
-            ench.percent,
-          ),
+          formattedEnchant: formattedString({
+            text: ench.enchant,
+            range: ench.range,
+            percent: ench.percent,
+          }),
         }));
       }
     }
@@ -129,10 +131,6 @@ export function useEnchantmentSelection() {
         );
       }
 
-      console.log(list);
-
-      // const rangeValue = randomInt(ench.range.from, ench.range.to);
-
       if (list.length > 0) {
         result.curse[part] = list.map((ench) => ({
           ...ench,
@@ -184,6 +182,10 @@ export function useEnchantmentSelection() {
       // 2. Берём случайное
       const randomIndex = Math.floor(Math.random() * allVisible.length);
       const candidate = allVisible[randomIndex];
+
+      if (!candidate.range) {
+        continue;
+      }
 
       // 3. Проверяем, можно ли добавить именно это
       if (!enchantmentStore.canAddMore) {
@@ -253,8 +255,6 @@ export function useEnchantmentSelection() {
         continue;
       }
 
-      // Для curse НЕ проверяем группу — можно добавлять сколько угодно из одной группы
-
       // Всё ок → добавляем
       enchantmentStore.addEnchantment({ ench: candidate, isCurse: true });
       console.log("Добавлено случайное проклятие:", candidate.enchant);
@@ -272,6 +272,7 @@ export function useEnchantmentSelection() {
 
   function clearAllEnch() {
     enchantmentStore.clearEnchantments();
+    orbStore.clearOrbStore();
   }
 
   function selectEnchant(ench: SelectedEnchant, isCurse?: boolean) {

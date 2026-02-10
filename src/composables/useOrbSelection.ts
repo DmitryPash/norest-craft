@@ -2,12 +2,10 @@ import { useEnchantmentSelection } from "./useEnchantmentSelection";
 import type { SelectedEnchant } from "../type/enchant";
 import { useArmorStore } from "../store/armorStore";
 import { useOrbStore } from "../store/orbStore";
-import { orbNameMap, orbName } from "../const/Const";
-import type { EnchantmentType } from "../type/enchant";
+import { orbName } from "../const/Const";
 import { useEnchantmentStore } from "../store/enchantmentStore";
 import { randomInt } from "../utils/random";
 import { formattedString } from "../utils/foramttedString";
-import { toRef } from "vue";
 
 export function useOrbSelection() {
   const enchantmentStore = useEnchantmentStore();
@@ -61,28 +59,28 @@ export function useOrbSelection() {
   }
 
   function useExaltOrb() {
+    if (orbStore.exaltedCount >= 4) {
+      console.warn("Больше нет свойств для Exalt");
+
+      return;
+    }
+
     const randomIndexEnchant = randomInt(
       0,
       enchantmentStore.selectedEnchantments.length - 1,
     );
 
-    console.log(
-      "RANDOM = ",
-      randomIndexEnchant,
-      enchantmentStore.selectedEnchantments.length,
-      randomIndexEnchant,
-    );
-
     const targetEnch =
       enchantmentStore.selectedEnchantments[randomIndexEnchant];
 
-    console.log("targetEnch = ", enchantmentStore.selectedEnchantments);
     const safeIndex = Math.min(
       randomIndexEnchant,
       enchantmentStore.selectedEnchantments.length,
     );
-    const newRangeValue =
-      targetEnch?.rangeValue * 0.25 + targetEnch?.rangeValue;
+    const saveFirstValue =
+      targetEnch?.firstRangeValue ?? targetEnch?.rangeValue;
+
+    const newRangeValue = saveFirstValue * 0.25 + targetEnch?.rangeValue;
 
     const newValueEnchant = formattedString({
       text: targetEnch.notFormattedString,
@@ -91,17 +89,24 @@ export function useOrbSelection() {
       range: targetEnch?.range,
     });
 
+    let countExaltProperty = targetEnch?.exalt ?? 0;
+
     removeEnchant(targetEnch.enchant);
+
+    countExaltProperty++;
 
     const newEnchant = {
       group: targetEnch?.group,
       enchant: newValueEnchant,
       rangeValue: newRangeValue,
+      firstRangeValue: saveFirstValue,
       notFormattedString: targetEnch?.notFormattedString,
       percent: targetEnch?.percent,
       range: targetEnch?.range,
+      exalt: countExaltProperty,
     };
 
+    orbStore.exaltedCount += 1;
     enchantmentStore.selectedEnchantments.splice(safeIndex, 0, newEnchant);
   }
 

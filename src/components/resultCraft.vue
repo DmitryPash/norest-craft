@@ -30,6 +30,8 @@
       >
         {{ index }} | {{ enchantment.group }} |
         {{ enchantment.enchant }}
+        <br /><br /><br />
+        {{ enchantment.exalt }}
         <button
           @click.stop="removeEnchant(enchantment.enchant)"
           class="clear-btn"

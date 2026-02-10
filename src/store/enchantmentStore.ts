@@ -4,9 +4,11 @@ import { useArmorStore } from "./armorStore";
 import type { AddEnchantmentOptions, SelectedEnchant } from "../type/enchant";
 import { formattedString } from "../utils/foramttedString";
 import { randomInt } from "../utils/random";
+import { useOrbStore } from "./orbStore";
 
 export const useEnchantmentStore = defineStore("enchantment", () => {
   const armorStore = useArmorStore();
+  const orbStore = useOrbStore();
 
   const selectedEnchantments = ref<SelectedEnchant[]>([]);
   const selectedCurse = ref<SelectedEnchant>();
@@ -28,18 +30,27 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
 
   function addEnchantment(options: AddEnchantmentOptions) {
     const { ench, positionIndex, isCurse = false } = options;
-    console.log("ench = ", ench);
-    const rangeValue = randomInt(ench?.range.from, ench?.range.to);
+
+    let formattedEnchant = ench.enchant;
+    let rangeValue = 0;
+
+    if (ench.range) {
+      rangeValue = randomInt(ench.range.from, ench.range.to);
+
+      formattedEnchant = formattedString({
+        text: ench.enchant,
+        range: ench.range,
+        percent: ench.percent,
+        isRandomNumber: rangeValue,
+      });
+    }
+
     if (isCurse) {
       isCurseExist.value = true;
+
       selectedCurse.value = {
         group: ench.group,
-        enchant: formattedString({
-          text: ench.enchant,
-          range: ench.range,
-          percent: ench.percent,
-          isRandomNumber: rangeValue,
-        }),
+        enchant: formattedEnchant,
         rangeValue: rangeValue,
         notFormattedString: ench.enchant,
       };
@@ -63,12 +74,7 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
     // Добавляем обычное свойство
     const newEnchant = {
       group: ench.group,
-      enchant: formattedString({
-        text: ench.enchant,
-        range: ench.range,
-        percent: ench.percent,
-        isRandomNumber: rangeValue,
-      }),
+      enchant: formattedEnchant,
       rangeValue: rangeValue,
       notFormattedString: ench.enchant,
       percent: ench.percent,

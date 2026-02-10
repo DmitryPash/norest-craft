@@ -9,8 +9,8 @@ export const formattedString = ({
   percent?: boolean;
   isRandomNumber?: number;
 }): string => {
-  // console.log("range = ", range ? range : text);
   if (!range) {
+    console.log("text");
     return text;
   }
   const { from, to } = range;
