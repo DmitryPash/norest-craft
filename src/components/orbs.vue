@@ -5,11 +5,9 @@
         <button
             v-for="orb in orbName"
             @click="chooseOrb(getKeyByValue(orbName, orb))"
-            :class="'orb--' + getKeyByValue(orbName, orb)"
             :style="`background-image: url('src/assets/icons/sphere/frames/${getKeyByValue(orbName, orb)}.png');`"
             class="orb"
         >
-            <!-- {{ getKeyByValue(orbName, orb) }} -->
         </button>
     </div>
 </template>
@@ -33,7 +31,7 @@ function chooseOrb(orbName) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .orb {
         background-repeat: no-repeat;
         background-position: center;
@@ -41,5 +39,9 @@ function chooseOrb(orbName) {
 
         width: 100px;
         height: 100px;
+
+        &:not(:last-child) {
+            margin-right: 14px;
+        }
     }
 </style>

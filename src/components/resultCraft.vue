@@ -1,62 +1,59 @@
 <template>
-  <h2>Result Craft</h2>
+  <div class="result-craft">
+    <h2>Result Craft</h2>
+    <Orbs class="result-craft__orbs"></Orbs>
 
-  <div
-    @click="selectedOrb()"
-    class="item"
-    style="padding: 15px; border: 2px solid floralwhite"
-  >
-    <div>
-      Тип: <strong>{{ currentArmor.type || "не выбран" }}</strong>
-    </div>
-    <div>
-      Часть: <strong>{{ currentArmor.base || "не выбрана" }}</strong>
-    </div>
-    <div>
-      Категория:
-      <strong>{{ currentArmor.enchantment || "не выбрана" }}</strong>
-    </div>
-    <ul>
-      <li
-        v-for="(enchantment, index) in enchantmentStore.selectedEnchantments"
-        :key="enchantment.enchant"
-        @click="useSkyOrb({ ench: enchantment, positionIndex: index })"
-        style="
-          border: 1px solid blue;
-          cursor: pointer;
-          margin-bottom: 8px;
-          user-select: none;
-        "
-      >
-        {{ index }} | {{ enchantment.group }} |
-        {{ enchantment.enchant }}
-        <br /><br /><br />
-        {{ enchantment.exalt }}
-        <button
-          @click.stop="removeEnchant(enchantment.enchant)"
-          class="clear-btn"
-          :title="`Удалить ${enchantment.enchant}`"
+    <div
+      @click="selectedOrb()"
+      class="result-craft-settings result-craft__settings"
+    >
+      <div class="result-craft-settings__item">
+        Тип: <strong>{{ currentArmor.type || "не выбран" }}</strong>
+      </div>
+      <div>
+        Часть: <strong>{{ currentArmor.base || "не выбрана" }}</strong>
+      </div>
+      <div>
+        Категория:
+        <strong>{{ currentArmor.enchantment || "не выбрана" }}</strong>
+      </div>
+      <ul class="result-craft-settings__list">
+        <li
+          v-for="(enchantment, index) in enchantmentStore.selectedEnchantments"
+          :key="enchantment.enchant"
+          @click="useSkyOrb({ ench: enchantment, positionIndex: index })"
+          class="result-craft-settings__property"
         >
-          ❌
-        </button>
-      </li>
-      <li
-        v-if="
-          enchantmentStore.isCurseExist &&
-          enchantmentStore.selectedCurse !== undefined
-        "
-        @click="
-          useSkyOrb({ ench: enchantmentStore.selectedCurse, isCurse: true })
-        "
-        style="border: 1px solid red; cursor: pointer"
-      >
-        {{ enchantmentStore.selectedCurse.group }} |
-        {{ enchantmentStore.selectedCurse.enchant }}
-      </li>
-    </ul>
-  </div>
+          <p class="result-craft-settings__text">
+            {{ index }} | {{ enchantment.group }} |
+            {{ enchantment.enchant }}
+            {{ enchantment.exalt }}
+          </p>
+          <button
+            @click.stop="removeEnchant(enchantment.enchant)"
+            class="clear-btn"
+            :title="`Удалить ${enchantment.enchant}`"
+          >
+            ❌
+          </button>
+        </li>
+        <li
+          v-if="
+            enchantmentStore.isCurseExist &&
+            enchantmentStore.selectedCurse !== undefined
+          "
+          @click="
+            useSkyOrb({ ench: enchantmentStore.selectedCurse, isCurse: true })
+          "
+          style="border: 1px solid red; cursor: pointer"
+        >
+          {{ enchantmentStore.selectedCurse.group }} |
+          {{ enchantmentStore.selectedCurse.enchant }}
+        </li>
+      </ul>
+    </div>
 
-  <Orbs></Orbs>
+  </div>
 </template>
 
 <script setup>
@@ -70,3 +67,49 @@ const { currentArmor, removeEnchant, enchantmentStore } =
 
 const { useSkyOrb, selectedOrb } = useOrbSelection();
 </script>
+
+<style scroped lang="scss">
+.result-craft {
+  width: 100%;
+  height: 100%;
+
+  &__orbs {
+    margin-bottom: 20px;
+  }
+
+  &__settings {
+    border: 2px solid floralwhite;
+    border-radius: 6px;
+  }
+}
+
+.result-craft-settings {
+  padding: 14px;
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__property {
+    width: 100%;
+    max-width: 350px;
+    border: 1px solid blue;
+    cursor: pointer;
+    margin-bottom: 8px;
+    user-select: none;
+    margin-bottom: 15px;
+    border-radius: 14px;
+    padding: 8px;
+  }
+
+  &__text {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+</style>
