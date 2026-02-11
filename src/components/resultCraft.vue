@@ -4,7 +4,7 @@
     <Orbs class="result-craft__orbs"></Orbs>
 
     <div
-      @click="selectedOrb()"
+      @click.stop="selectedOrb()"
       class="result-craft-settings result-craft__settings"
     >
       <div class="result-craft-settings__item">
@@ -21,7 +21,7 @@
         <li
           v-for="(enchantment, index) in enchantmentStore.selectedEnchantments"
           :key="enchantment.enchant"
-          @click="useSkyOrb({ ench: enchantment, positionIndex: index })"
+          @click.stop="useSkyOrb({ ench: enchantment, positionIndex: index })"
           class="result-craft-settings__property"
         >
           <p class="result-craft-settings__text">
@@ -99,7 +99,6 @@ const { useSkyOrb, selectedOrb } = useOrbSelection();
     width: 100%;
     max-width: 350px;
     border: 1px solid blue;
-    cursor: pointer;
     margin-bottom: 8px;
     user-select: none;
     margin-bottom: 15px;

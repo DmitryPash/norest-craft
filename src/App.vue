@@ -1,14 +1,22 @@
 <script setup>
 import SelectArmor from "./components/selectArmor.vue";
 import SelectEnchantment from "./components/selectEnchantment.vue";
+
+function resetCursor() {
+  document.body.style.cursor = 'auto'
+
+  /* Наверное надо переносить в Body */
+}
 </script>
 
 <template>
-  <div>
-    <h1>NO REST CRAFT</h1>
+  <div @click.stop="resetCursor" class="norest">
+    <div>
+      <h1>NO REST CRAFT</h1>
+    </div>
+    <SelectArmor></SelectArmor>
+    <SelectEnchantment></SelectEnchantment>
   </div>
-  <SelectArmor></SelectArmor>
-  <SelectEnchantment></SelectEnchantment>
 </template>
 
 <style scoped>
