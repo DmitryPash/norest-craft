@@ -63,7 +63,6 @@
 import { computed, ref } from "vue";
 import { useEnchantmentSelection } from "../composables/useEnchantmentSelection";
 import Orbs from "./orbs.vue";
-import { orbNameMap } from "../const/Const";
 import { useOrbSelection } from "../composables/useOrbSelection";
 
 const { currentArmor, removeEnchant, enchantmentStore } =

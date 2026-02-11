@@ -10,7 +10,6 @@ export const formattedString = ({
   isRandomNumber?: number;
 }): string => {
   if (!range) {
-    console.log("text");
     return text;
   }
   const { from, to } = range;

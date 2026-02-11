@@ -1,9 +1,17 @@
 <template>
-    <h2>ORBS</h2>
+    <div class="orbs">
+        <h2>ORBS</h2>
 
-    <button v-for="orb in orbName" @click="chooseOrb(getKeyByValue(orbName, orb))">
-        {{ getKeyByValue(orbName, orb) }}
-    </button>
+        <button
+            v-for="orb in orbName"
+            @click="chooseOrb(getKeyByValue(orbName, orb))"
+            :class="'orb--' + getKeyByValue(orbName, orb)"
+            :style="`background-image: url('src/assets/icons/sphere/frames/${getKeyByValue(orbName, orb)}.png');`"
+            class="orb"
+        >
+            <!-- {{ getKeyByValue(orbName, orb) }} -->
+        </button>
+    </div>
 </template>
 
 <script setup>
@@ -24,3 +32,14 @@ function chooseOrb(orbName) {
     orbStore.setSelectOrb(orbName);
 }
 </script>
+
+<style scoped>
+    .orb {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+
+        width: 100px;
+        height: 100px;
+    }
+</style>

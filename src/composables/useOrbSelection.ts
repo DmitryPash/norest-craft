@@ -72,20 +72,20 @@ export function useOrbSelection() {
 
     const targetEnch =
       enchantmentStore.selectedEnchantments[randomIndexEnchant];
-
     const safeIndex = Math.min(
       randomIndexEnchant,
       enchantmentStore.selectedEnchantments.length,
     );
     const saveFirstValue =
       targetEnch?.firstRangeValue ?? targetEnch?.rangeValue;
-
-    const newRangeValue = saveFirstValue * 0.25 + targetEnch?.rangeValue;
+    const valueGap = saveFirstValue * 0.25;
+    const newRangeValue =  targetEnch?.rangeValue + valueGap;
+    const valueTofix = Number(newRangeValue.toFixed(0))
 
     const newValueEnchant = formattedString({
       text: targetEnch.notFormattedString,
       percent: targetEnch?.percent,
-      isRandomNumber: newRangeValue,
+      isRandomNumber: valueTofix,
       range: targetEnch?.range,
     });
 
@@ -98,7 +98,7 @@ export function useOrbSelection() {
     const newEnchant = {
       group: targetEnch?.group,
       enchant: newValueEnchant,
-      rangeValue: newRangeValue,
+      rangeValue: valueTofix,
       firstRangeValue: saveFirstValue,
       notFormattedString: targetEnch?.notFormattedString,
       percent: targetEnch?.percent,
@@ -108,6 +108,10 @@ export function useOrbSelection() {
 
     orbStore.exaltedCount += 1;
     enchantmentStore.selectedEnchantments.splice(safeIndex, 0, newEnchant);
+  }
+
+  function useEssenceOrb() {
+
   }
 
   function selectedOrb() {
@@ -123,6 +127,10 @@ export function useOrbSelection() {
 
     if (nameOrb === orbName.exalting) {
       useExaltOrb();
+    }
+
+    if(nameOrb === orbName.essence) {
+      useEssenceOrb()
     }
   }
 
