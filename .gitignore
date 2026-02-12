@@ -1,0 +1,8 @@
+# Object file
+*.o
+
+# Ada Library Information
+*.ali
+
+# Node.js / npm / yarn / pnpm
+node_modules/
