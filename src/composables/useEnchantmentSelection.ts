@@ -13,6 +13,9 @@ export function useEnchantmentSelection() {
   const orbStore = useOrbStore();
 
   const currentArmor = computed(() => armorStore.getArmor());
+  const exaltCount = computed(() => orbStore.exaltedCount)
+
+  console.log("exaltCount - ", exaltCount.value)
   const search = ref("");
 
   const filteredEnchants = computed(() => {
@@ -284,6 +287,7 @@ export function useEnchantmentSelection() {
     search,
     filteredEnchants,
     curseEnchants,
+    exaltCount,
     selectEnchant,
     removeEnchant,
     addRandomEnchantReplacement,
