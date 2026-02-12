@@ -4,6 +4,7 @@ export const orbName = {
   corrupting: 3,
   exalting: 4,
   essence: 5,
+  empty: 6,
 };
 
 

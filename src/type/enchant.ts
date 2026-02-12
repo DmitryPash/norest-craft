@@ -5,6 +5,8 @@ export interface SelectedEnchant {
   percent: boolean;
   rangeValue?: number;
   notFormattedString?: string;
+  firstRangeValue?: number;
+  exalt?: number;
 }
 
 export interface AddEnchantmentOptions {

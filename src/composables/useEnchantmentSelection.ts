@@ -20,14 +20,13 @@ export function useEnchantmentSelection() {
   const filteredEnchants = computed(() => {
     const { type, base, enchantment } = currentArmor.value;
 
-    // Если категория не выбрана — ничего не показываем
     if (!enchantment) return {};
 
     if (!(enchantment in enchantsJson)) {
       console.warn(`Категория "${enchantment}" не найдена в enchants.json`);
       return {};
     }
-    // Получаем ключ категории
+
     const catKey = enchantment as keyof typeof enchantsJson;
     const category = enchantsJson[catKey];
 
@@ -36,11 +35,8 @@ export function useEnchantmentSelection() {
     const result: Record<
       string,
       Record<string, Array<SelectedEnchant & { formattedEnchant: string }>>
-    > = {
-      [catKey]: {},
-    };
+    > = { [catKey]: {} };
 
-    // Определяем, какие части показывать
     let allowedParts: string[] = [];
 
     if (base) {
@@ -49,11 +45,9 @@ export function useEnchantmentSelection() {
         allowedParts = [mappedPart];
       }
     } else {
-      // если часть не выбрана — все доступные части в категории
       allowedParts = Object.keys(category);
     }
 
-    // Функция-помощник: проверяет, выбрано ли уже это зачарование
     const isAlreadySelected = (ench: SelectedEnchant) =>
       enchantmentStore.selectedEnchantments.some(
         (selected) => selected.group === ench.group
@@ -62,7 +56,6 @@ export function useEnchantmentSelection() {
     for (const part of allowedParts) {
       let list = category[part as keyof typeof category] || [];
 
-      // Поиск
       if (search.value.trim()) {
         const q = search.value.toLowerCase();
         list = list.filter(
@@ -75,19 +68,27 @@ export function useEnchantmentSelection() {
       list = list.filter((e) => !isAlreadySelected(e));
 
       if (list.length > 0) {
-        result[catKey][part] = list.map((ench) => ({
+        result[catKey]![part] = list.map((ench) => {
+          // Защищаем опциональные поля дефолтными значениями
+         const safeRange = ench.range ?? { from: 0, to: 0 };
+        const safePercent = ench.percent ?? false;
+
+        return {
           ...ench,
+          // Перезаписываем поля, чтобы они были не optional
+          range: safeRange,
+          percent: safePercent,
           formattedEnchant: formattedString({
             text: ench.enchant,
-            range: ench.range,
-            percent: ench.percent,
+            range: safeRange,
+            percent: safePercent,
           }),
-        }));
+        };
+        });
       }
     }
 
-    // Если в категории ничего не осталось — возвращаем пустой объект
-    if (Object.keys(result[catKey]).length === 0) {
+    if (Object.keys(result[catKey]!).length === 0) {
       return {};
     }
 
@@ -95,8 +96,7 @@ export function useEnchantmentSelection() {
   });
 
   const curseEnchants = computed(() => {
-    // Если в JSON нет категории "curse" — возвращаем пустой объект
-    if (!("curse" in enchantsJson)) {
+      if (!("curse" in enchantsJson)) {
       console.warn('Категория "curse" не найдена в enchants.json');
       return {};
     }
@@ -107,12 +107,15 @@ export function useEnchantmentSelection() {
 
     const result: Record<
       string,
-      Record<string, Array<SelectedEnchant & { formattedEnchant: string }>>
-    > = {
-      curse: {},
-    };
+      Record<string, Array<
+        SelectedEnchant & {
+          formattedEnchant: string;
+          randomEnchant: string;
+          curseNumber: number;
+        }
+      >>
+    > = { curse: {} };
 
-    // Определяем, какие части показывать (та же логика, что и в filteredEnchants)
     let allowedParts: string[] = [];
 
     const { base } = currentArmor.value;
@@ -123,15 +126,12 @@ export function useEnchantmentSelection() {
         allowedParts = [mappedPart];
       }
     } else {
-      // если часть не выбрана — показываем все доступные части из curse
       allowedParts = Object.keys(curseCategory);
     }
 
-    // Проходим по нужным частям
     for (const part of allowedParts) {
       let list = curseCategory[part as keyof typeof curseCategory] || [];
 
-      // Применяем поиск, если пользователь что-то ввёл
       if (search.value.trim()) {
         const q = search.value.toLowerCase();
         list = list.filter(
@@ -142,25 +142,31 @@ export function useEnchantmentSelection() {
       }
 
       if (list.length > 0) {
-        result.curse[part] = list.map((ench) => ({
-          ...ench,
-          formattedEnchant: formattedString({
-            text: ench.enchant,
-            range: ench.range,
-            percent: ench.percent,
-          }),
-          randomEnchant: formattedString({
-            text: ench.enchant,
-            range: ench.range,
-            percent: ench.percent,
-            isRandomNumber: 99,
-          }),
-        }));
+        result.curse![part] = list.map((ench) => {
+          const safeRange = ench.range ?? { from: 0, to: 0 };
+          const safePercent = ench.percent ?? false;
+
+          return {
+            ...ench,
+            range: safeRange,
+            percent: safePercent,
+            formattedEnchant: formattedString({
+              text: ench.enchant,
+              range: safeRange,
+              percent: safePercent,
+            }),
+            randomEnchant: formattedString({
+              text: ench.enchant,
+              range: safeRange,
+              percent: safePercent,
+            }),
+            curseNumber: 99,
+          };
+        });
       }
     }
 
-    // Если после фильтра ничего не осталось — возвращаем пустой объект
-    if (Object.keys(result.curse).length === 0) {
+    if (!result.curse || Object.keys(result.curse).length === 0) {
       return {};
     }
 
@@ -193,16 +199,16 @@ export function useEnchantmentSelection() {
       const randomIndex = Math.floor(Math.random() * allVisible.length);
       const candidate = allVisible[randomIndex];
 
+      if (!candidate) {
+        return;
+      }
+
       if (!candidate.range) {
         continue;
       }
 
       // 3. Проверяем, можно ли добавить именно это
       if (!enchantmentStore.canAddMore) {
-        return;
-      }
-
-      if (!candidate) {
         return;
       }
 
@@ -256,6 +262,8 @@ export function useEnchantmentSelection() {
       const randomIndex = Math.floor(Math.random() * allVisible.length);
       const candidate = allVisible[randomIndex];
 
+      if(!candidate) return;
+
       // Уже есть точно такое же зачарование? (по enchant)
       if (
         enchantmentStore.selectedEnchantments.some(
@@ -288,7 +296,6 @@ export function useEnchantmentSelection() {
   function selectEnchant(ench: SelectedEnchant, isCurse?: boolean) {
     enchantmentStore.addEnchantment({ ench, isCurse });
     orbStore.clearOrbStore();
-
   }
 
   return {

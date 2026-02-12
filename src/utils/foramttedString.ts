@@ -12,7 +12,9 @@ export const formattedString = ({
   if (!range) {
     return text;
   }
-  const { from, to } = range;
+
+  const from = range.from ?? 0;
+  const to = range.to ?? 0;
 
   if (isRandomNumber !== undefined) {
     return text.replace(

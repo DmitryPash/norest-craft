@@ -11,14 +11,14 @@ export function useOrbSelection() {
   const enchantmentStore = useEnchantmentStore();
   const armorStore = useArmorStore();
   const orbStore = useOrbStore();
-  const { removeEnchant, addRandomEnchantReplacement, addRandomCurse } =
+  const { removeEnchant, addRandomEnchantReplacement, addRandomCurse, clearAllEnch } =
     useEnchantmentSelection();
 
-  function getKeyByValue(object, value) {
+  function getKeyByValue(object: any, value: any) {
     return Object.keys(object).find(key => object[key] === value);
   }
 
-  function chooseOrb(nameOrb: string) {
+  function chooseOrb(nameOrb: keyof typeof orbName) {
       orbStore.removeSelectOrb()
 
       Object.assign(document.body.style, {
@@ -84,7 +84,6 @@ export function useOrbSelection() {
   function useExaltOrb() {
     if (orbStore.exaltedCount >= 4) {
       console.warn("Больше нет свойств для Exalt");
-
       return;
     }
 
@@ -93,43 +92,52 @@ export function useOrbSelection() {
       enchantmentStore.selectedEnchantments.length - 1,
     );
 
-    const targetEnch =
-      enchantmentStore.selectedEnchantments[randomIndexEnchant];
-    const safeIndex = Math.min(
-      randomIndexEnchant,
-      enchantmentStore.selectedEnchantments.length,
-    );
+    const targetEnch = enchantmentStore.selectedEnchantments[randomIndexEnchant];
+
+    if (!targetEnch) {
+      console.warn("Не удалось выбрать зачарование для exalt");
+      return;
+    }
+
     const saveFirstValue =
-      targetEnch?.firstRangeValue ?? targetEnch?.rangeValue;
+      targetEnch.firstRangeValue ?? targetEnch.rangeValue ?? 0;
+
     const valueGap = saveFirstValue * 0.25;
-    const newRangeValue =  targetEnch?.rangeValue + valueGap;
-    const valueTofix = Number(newRangeValue.toFixed(0))
+    const newRangeValue = targetEnch.rangeValue ?? 0 + valueGap;
+    const valueTofix = Number(newRangeValue.toFixed(0));
 
     const newValueEnchant = formattedString({
-      text: targetEnch.notFormattedString,
-      percent: targetEnch?.percent,
+      text: targetEnch.notFormattedString ?? targetEnch.enchant,
+      percent: targetEnch.percent,
       isRandomNumber: valueTofix,
-      range: targetEnch?.range,
+      range: targetEnch.range,
     });
 
-    let countExaltProperty = targetEnch?.exalt ?? 0;
-
-    removeEnchant(targetEnch.enchant);
-
+    let countExaltProperty = targetEnch.exalt ?? 0;
     countExaltProperty++;
 
+    // Удаляем старое зачарование
+    removeEnchant(targetEnch.enchant);
+
+    // Создаём новое с обновлёнными значениями
     const newEnchant = {
-      group: targetEnch?.group,
+      group: targetEnch.group,
       enchant: newValueEnchant,
       rangeValue: valueTofix,
       firstRangeValue: saveFirstValue,
-      notFormattedString: targetEnch?.notFormattedString,
-      percent: targetEnch?.percent,
-      range: targetEnch?.range,
+      notFormattedString: targetEnch.notFormattedString ?? targetEnch.enchant,
+      percent: targetEnch.percent,
+      range: targetEnch.range,
       exalt: countExaltProperty,
     };
 
     orbStore.exaltedCount += 1;
+
+    // Вставляем на то же место
+    const safeIndex = Math.min(
+      randomIndexEnchant,
+      enchantmentStore.selectedEnchantments.length,
+    );
     enchantmentStore.selectedEnchantments.splice(safeIndex, 0, newEnchant);
   }
 
@@ -137,6 +145,10 @@ export function useOrbSelection() {
     orbStore.essence = false;
 
     orbStore.clearOrbStore();
+  }
+
+  function useEmptyOrb() {
+    clearAllEnch();
   }
 
   function selectedOrb() {
@@ -156,6 +168,10 @@ export function useOrbSelection() {
 
     if(nameOrb === orbName.essence) {
       useEssenceOrb()
+    }
+
+    if(nameOrb === orbName.empty) {
+      useEmptyOrb()
     }
   }
 

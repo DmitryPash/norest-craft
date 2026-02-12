@@ -16,7 +16,7 @@ export const useOrbStore = defineStore("orb", () => {
 
   function removeSelectOrb() {
     isOrbSelected.value = false;
-    nameOrb.value = orbName["noname"];
+    // nameOrb.value = orbName["noname"];
     resetSkyOrb();
   }
 
@@ -29,6 +29,7 @@ export const useOrbStore = defineStore("orb", () => {
     exaltedCount.value = 0;
     essence.value = false;
     sky.value = false;
+    document.body.style.cursor = 'auto'
   }
 
   return {
