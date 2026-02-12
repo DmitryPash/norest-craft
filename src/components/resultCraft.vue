@@ -5,6 +5,7 @@
 
     <div
       @click.stop="selectedOrb()"
+      :class="{'result-craft__settings--exalting': exaltCount === 4}"
       class="result-craft-settings result-craft__settings"
     >
       <div class="result-craft-settings__item">
@@ -24,10 +25,13 @@
           @click.stop="useSkyOrb({ ench: enchantment, positionIndex: index })"
           class="result-craft-settings__property"
         >
+          <ul class="result-craft-settings__exalts">
+            <ol class="result-craft-settings__exalt" v-for="value in enchantment.exalt">
+            </ol>
+          </ul>
           <p class="result-craft-settings__text">
             {{ index }} | {{ enchantment.group }} |
             {{ enchantment.enchant }}
-            {{ enchantment.exalt }}
           </p>
           <button
             @click.stop="removeEnchant(enchantment.enchant)"
@@ -62,7 +66,7 @@ import { useEnchantmentSelection } from "../composables/useEnchantmentSelection"
 import Orbs from "./orbs.vue";
 import { useOrbSelection } from "../composables/useOrbSelection";
 
-const { currentArmor, removeEnchant, enchantmentStore } =
+const { currentArmor, removeEnchant, enchantmentStore, exaltCount } =
   useEnchantmentSelection();
 
 const { useSkyOrb, selectedOrb } = useOrbSelection();
@@ -80,6 +84,10 @@ const { useSkyOrb, selectedOrb } = useOrbSelection();
   &__settings {
     border: 2px solid floralwhite;
     border-radius: 6px;
+
+    &--exalting {
+      border: 4px solid rgb(242, 187, 48);
+    }
   }
 }
 
@@ -109,6 +117,20 @@ const { useSkyOrb, selectedOrb } = useOrbSelection();
   &__text {
     margin-top: 0;
     margin-bottom: 0;
+  }
+
+  &__exalts {
+    display: flex;
+    column-gap: 5px;
+  }
+
+  &__exalt {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: rgb(255, 248, 115);
+    padding: 0;
+    margin: 0;
   }
 }
 </style>

@@ -111,7 +111,7 @@ export function useOrbSelection() {
   }
 
   function useEssenceOrb() {
-
+    orbStore.essense = true;
   }
 
   function selectedOrb() {
