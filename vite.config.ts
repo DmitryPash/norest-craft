@@ -3,7 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({mode}) => {
+  const isProd = mode === "production"
+  return {
+
   plugins: [
     vue(),
   ],
@@ -19,7 +22,7 @@ export default defineConfig({
   },
 
   // Базовый путь (важно для сборки и деплоя)
-  base: '/',  // ← для большинства случаев оставляй так
+  base: isProd ? '/norest-craft/' : '/',  // ← для большинства случаев оставляй так
               // если деплоишь в подпапку (github pages /my-app/) → base: '/my-app/'
 
   // Оптимизация сборки
@@ -50,4 +53,6 @@ export default defineConfig({
   optimizeDeps: {
     include: ['vue', 'pinia'],
   },
+
+  }
 })
