@@ -31,7 +31,7 @@ const {getKeyByValue, chooseOrb} = useOrbSelection();
         height: 100px;
 
         &--clicked {
-            cursor: url('../assets/icons/sphere/64/exalting.png') 16 16, auto !important;
+            cursor: url('/icons/sphere/64/exalting.png') 16 16, auto !important;
         }
 
 
