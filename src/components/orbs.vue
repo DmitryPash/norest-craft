@@ -5,7 +5,7 @@
         <button
             v-for="orb in orbName"
             @click.stop="chooseOrb(getKeyByValue(orbName, orb))"
-            :style="`background-image: url('/icons/sphere/frames/${getKeyByValue(orbName, orb)}.png');`"
+            :style="`background-image: url('icons/sphere/frames/${getKeyByValue(orbName, orb)}.png');`"
             class="orb"
         >
         </button>
