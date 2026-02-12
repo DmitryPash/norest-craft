@@ -11,7 +11,7 @@ export function useOrbSelection() {
   const enchantmentStore = useEnchantmentStore();
   const armorStore = useArmorStore();
   const orbStore = useOrbStore();
-  const { removeEnchant, addRandomEnchantReplacement, addRandomCurse, selectEnchant } =
+  const { removeEnchant, addRandomEnchantReplacement, addRandomCurse } =
     useEnchantmentSelection();
 
   function getKeyByValue(object, value) {
@@ -26,6 +26,10 @@ export function useOrbSelection() {
       })
       if(orbName[nameOrb] === 5) {
         orbStore.essence = true;
+      }
+
+       if(orbName[nameOrb] === 1) {
+        orbStore.sky = true;
       }
 
       orbStore.setSelectOrb(nameOrb);
@@ -44,6 +48,8 @@ export function useOrbSelection() {
     positionIndex?: number;
     isCurse?: boolean;
   }) {
+    if(!orbStore.sky) return;
+
     removeEnchant(ench.enchant);
 
     if (isCurse) {

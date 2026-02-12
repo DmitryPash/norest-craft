@@ -1,10 +1,13 @@
 <script setup>
 import SelectArmor from "./components/selectArmor.vue";
 import SelectEnchantment from "./components/selectEnchantment.vue";
+import { useOrbStore } from "./store/orbStore";
+
+const orbStore = useOrbStore();
 
 function resetCursor() {
   document.body.style.cursor = 'auto'
-
+  orbStore.clearOrbStore();
   /* Наверное надо переносить в Body */
 }
 </script>
