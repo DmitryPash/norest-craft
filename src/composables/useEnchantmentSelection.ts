@@ -18,7 +18,7 @@ export function useEnchantmentSelection() {
   const search = ref("");
 
   const filteredEnchants = computed(() => {
-    const { type, base, enchantment } = currentArmor.value;
+    const { base, enchantment } = currentArmor.value;
 
     if (!enchantment) return {};
 
@@ -65,7 +65,11 @@ export function useEnchantmentSelection() {
         );
       }
 
-      list = list.filter((e) => !isAlreadySelected(e));
+      list = list.filter((e) => {
+        // if (!e) return false;
+
+        return !isAlreadySelected(e as SelectedEnchant)
+      });
 
       if (list.length > 0) {
         result[catKey]![part] = list.map((ench) => {

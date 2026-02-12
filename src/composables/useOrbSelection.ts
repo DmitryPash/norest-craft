@@ -22,7 +22,7 @@ export function useOrbSelection() {
       orbStore.removeSelectOrb()
 
       Object.assign(document.body.style, {
-          cursor: `url('src/assets/icons/sphere/64/${nameOrb}.png') 16 16, auto`,
+          cursor: `url('/icons/sphere/64/${nameOrb}.png') 16 16, auto`,
       })
       if(orbName[nameOrb] === 5) {
         orbStore.essence = true;

@@ -16,7 +16,6 @@ export const useOrbStore = defineStore("orb", () => {
 
   function removeSelectOrb() {
     isOrbSelected.value = false;
-    // nameOrb.value = orbName["noname"];
     resetSkyOrb();
   }
 

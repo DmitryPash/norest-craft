@@ -4,11 +4,9 @@ import { useArmorStore } from "./armorStore";
 import type { AddEnchantmentOptions, SelectedEnchant } from "../type/enchant";
 import { formattedString } from "../utils/foramttedString";
 import { randomInt } from "../utils/random";
-import { useOrbStore } from "./orbStore";
 
 export const useEnchantmentStore = defineStore("enchantment", () => {
   const armorStore = useArmorStore();
-  const orbStore = useOrbStore();
 
   const selectedEnchantments = ref<SelectedEnchant[]>([]);
   const selectedCurse = ref<SelectedEnchant>();
@@ -51,6 +49,8 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
       selectedCurse.value = {
         group: ench.group,
         enchant: formattedEnchant,
+        range: ench.range ?? { from: 0, to: 0 },
+        percent: ench.percent ?? false,
         rangeValue: rangeValue,
         notFormattedString: ench.enchant,
       };
