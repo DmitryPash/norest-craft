@@ -34,6 +34,7 @@
             {{ enchantment.enchant }}
           </p>
           <button
+            v-if="isEssence"
             @click.stop="removeEnchant(enchantment.enchant)"
             class="clear-btn"
             :title="`Удалить ${enchantment.enchant}`"
@@ -66,7 +67,7 @@ import { useEnchantmentSelection } from "../composables/useEnchantmentSelection"
 import Orbs from "./orbs.vue";
 import { useOrbSelection } from "../composables/useOrbSelection";
 
-const { currentArmor, removeEnchant, enchantmentStore, exaltCount } =
+const { currentArmor, removeEnchant, enchantmentStore, exaltCount, isEssence } =
   useEnchantmentSelection();
 
 const { useSkyOrb, selectedOrb } = useOrbSelection();

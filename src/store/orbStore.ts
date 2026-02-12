@@ -6,7 +6,7 @@ export const useOrbStore = defineStore("orb", () => {
   const isOrbSelected = ref<boolean>(false);
   const nameOrb = ref<number>(0);
   const exaltedCount = ref<number>(0);
-  const essense = ref<boolean>(false);
+  const essence = ref<boolean>(false);
 
   function setSelectOrb(name: keyof typeof orbName) {
     isOrbSelected.value = true;
@@ -21,13 +21,14 @@ export const useOrbStore = defineStore("orb", () => {
   function clearOrbStore() {
     removeSelectOrb();
     exaltedCount.value = 0;
+    essence.value = false;
   }
 
   return {
     isOrbSelected,
     nameOrb,
     exaltedCount,
-    essense,
+    essence,
 
     setSelectOrb,
     removeSelectOrb,

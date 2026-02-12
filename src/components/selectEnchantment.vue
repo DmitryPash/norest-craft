@@ -10,78 +10,80 @@
       <ResultCraft></ResultCraft>
     </div>
 
-    <!-- Поиск -->
-    <input
-      v-model="search"
-      placeholder="Поиск по названию или группе..."
-      class="search-input"
-    />
+    <template v-if="isEssence" class="zxc">
+      <!-- Поиск -->
+      <input
+        v-model="search"
+        placeholder="Поиск по названию или группе..."
+        class="search-input"
+      />
 
-    <!-- Список -->
-    <div v-if="Object.keys(filteredEnchants).length" class="enchant-groups">
-      <div
-        v-for="(categoryData, categoryKey) in filteredEnchants"
-        :key="categoryKey"
-        class="category"
-      >
-        <h3>{{ categoryKey }}</h3>
-
+      <!-- Список -->
+      <div v-if="Object.keys(filteredEnchants).length" class="enchant-groups">
         <div
-          v-for="(enchants, partKey) in categoryData"
-          :key="partKey"
-          class="part-section"
+          v-for="(categoryData, categoryKey) in filteredEnchants"
+          :key="categoryKey"
+          class="category"
         >
-          <h4>{{ partKey }}</h4>
+          <h3>{{ categoryKey }}</h3>
 
           <div
-            v-for="ench in enchants"
-            :key="ench.enchant"
-            class="enchant-item"
-            @click="selectEnchant(ench)"
+            v-for="(enchants, partKey) in categoryData"
+            :key="partKey"
+            class="part-section"
           >
-            <div class="enchant-text">{{ ench.formattedEnchant }}</div>
-            <div class="group-text">Группа: {{ ench.group }}</div>
+            <h4>{{ partKey }}</h4>
+
+            <div
+              v-for="ench in enchants"
+              :key="ench.enchant"
+              class="enchant-item"
+              @click.stop="selectEnchant(ench)"
+            >
+              <div class="enchant-text">{{ ench.formattedEnchant }}</div>
+              <div class="group-text">Группа: {{ ench.group }}</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div v-else class="no-matches">
-      <p v-if="currentArmor.enchantment">
-        В категории <strong>{{ currentArmor.enchantment }}</strong>
-        {{ currentArmor.base ? `для части ${currentArmor.base}` : "" }}
-        ничего не найдено
-      </p>
-      <p v-else>Выберите категорию зачарований (common / magic / plagued)</p>
-    </div>
+      <div v-else class="no-matches">
+        <p v-if="currentArmor.enchantment">
+          В категории <strong>{{ currentArmor.enchantment }}</strong>
+          {{ currentArmor.base ? `для части ${currentArmor.base}` : "" }}
+          ничего не найдено
+        </p>
+        <p v-else>Выберите категорию зачарований (common / magic / plagued)</p>
+      </div>
 
-    <!-- Показываем только когда вещь категорией plagued -->
-    <div v-if="currentArmor['enchantment'] === 'plagued'" class="curse">
-      <div
-        v-for="(curseData, categoryKey) in curseEnchants"
-        :key="categoryKey"
-        class="category"
-      >
-        <h3>{{ categoryKey }}</h3>
-
+      <!-- Показываем только когда вещь категорией plagued -->
+      <div v-if="currentArmor['enchantment'] === 'plagued'" class="curse">
         <div
-          v-for="(curses, partKey) in curseData"
-          :key="partKey"
-          class="part-section"
+          v-for="(curseData, categoryKey) in curseEnchants"
+          :key="categoryKey"
+          class="category"
         >
-          <h4>{{ partKey }}</h4>
+          <h3>{{ categoryKey }}</h3>
 
           <div
-            v-for="curse in curses"
-            :key="curse.enchant"
-            class="enchant-item"
-            @click="selectEnchant(curse, true)"
+            v-for="(curses, partKey) in curseData"
+            :key="partKey"
+            class="part-section"
           >
-            <div class="enchant-text">{{ curse.formattedEnchant }}</div>
-            <div class="group-text">Группа: {{ curse.group }}</div>
+            <h4>{{ partKey }}</h4>
+
+            <div
+              v-for="curse in curses"
+              :key="curse.enchant"
+              class="enchant-item"
+              @click="selectEnchant(curse, true)"
+            >
+              <div class="enchant-text">{{ curse.formattedEnchant }}</div>
+              <div class="group-text">Группа: {{ curse.group }}</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -94,6 +96,7 @@ import { useArmoreSelection } from "../composables/useArmorSelection";
 const {
   currentArmor,
   search,
+  isEssence,
   filteredEnchants,
   curseEnchants,
   selectEnchant,

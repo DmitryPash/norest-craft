@@ -13,28 +13,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import {orbName} from '../const/Const'
-import { useOrbStore } from '../store/orbStore';
+import { useOrbSelection } from '../composables/useOrbSelection';
+
+const {getKeyByValue, chooseOrb} = useOrbSelection();
 
 
-const orbStore = useOrbStore();
-
-const selectedOrb = computed(() => orbStore.selectedOrb)
-
-function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => object[key] === value);
-}
-
-function chooseOrb(orbName) {
-    orbStore.removeSelectOrb()
-
-    Object.assign(document.body.style, {
-        cursor: `url('src/assets/icons/sphere/64/${orbName}.png') 16 16, auto`,
-    })
-
-    orbStore.setSelectOrb(orbName);
-}
 </script>
 
 <style scoped lang="scss">

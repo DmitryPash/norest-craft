@@ -14,8 +14,7 @@ export function useEnchantmentSelection() {
 
   const currentArmor = computed(() => armorStore.getArmor());
   const exaltCount = computed(() => orbStore.exaltedCount)
-
-  console.log("exaltCount - ", exaltCount.value)
+  const isEssence = computed(() => orbStore.essence);
   const search = ref("");
 
   const filteredEnchants = computed(() => {
@@ -54,6 +53,12 @@ export function useEnchantmentSelection() {
       allowedParts = Object.keys(category);
     }
 
+    // Функция-помощник: проверяет, выбрано ли уже это зачарование
+    const isAlreadySelected = (ench: SelectedEnchant) =>
+      enchantmentStore.selectedEnchantments.some(
+        (selected) => selected.group === ench.group
+      );
+
     for (const part of allowedParts) {
       let list = category[part as keyof typeof category] || [];
 
@@ -66,6 +71,8 @@ export function useEnchantmentSelection() {
             e.group.toLowerCase().includes(q),
         );
       }
+
+      list = list.filter((e) => !isAlreadySelected(e));
 
       if (list.length > 0) {
         result[catKey][part] = list.map((ench) => ({
@@ -280,6 +287,8 @@ export function useEnchantmentSelection() {
 
   function selectEnchant(ench: SelectedEnchant, isCurse?: boolean) {
     enchantmentStore.addEnchantment({ ench, isCurse });
+    orbStore.clearOrbStore();
+
   }
 
   return {
@@ -288,6 +297,7 @@ export function useEnchantmentSelection() {
     filteredEnchants,
     curseEnchants,
     exaltCount,
+    isEssence,
     selectEnchant,
     removeEnchant,
     addRandomEnchantReplacement,

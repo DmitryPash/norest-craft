@@ -11,8 +11,25 @@ export function useOrbSelection() {
   const enchantmentStore = useEnchantmentStore();
   const armorStore = useArmorStore();
   const orbStore = useOrbStore();
-  const { removeEnchant, addRandomEnchantReplacement, addRandomCurse } =
+  const { removeEnchant, addRandomEnchantReplacement, addRandomCurse, selectEnchant } =
     useEnchantmentSelection();
+
+  function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+  }
+
+  function chooseOrb(nameOrb: string) {
+      orbStore.removeSelectOrb()
+
+      Object.assign(document.body.style, {
+          cursor: `url('src/assets/icons/sphere/64/${nameOrb}.png') 16 16, auto`,
+      })
+      if(orbName[nameOrb] === 5) {
+        orbStore.essence = true;
+      }
+
+      orbStore.setSelectOrb(nameOrb);
+  }
 
   function clearEnch() {
     enchantmentStore.clearEnchantments();
@@ -111,7 +128,9 @@ export function useOrbSelection() {
   }
 
   function useEssenceOrb() {
-    orbStore.essense = true;
+    orbStore.essence = false;
+
+    orbStore.clearOrbStore();
   }
 
   function selectedOrb() {
@@ -136,7 +155,10 @@ export function useOrbSelection() {
 
   return {
     useSkyOrb,
+    useEssenceOrb,
 
+    chooseOrb,
+    getKeyByValue,
     selectedOrb,
   };
 }
