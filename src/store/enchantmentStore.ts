@@ -2,11 +2,16 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useArmorStore } from "./armorStore";
 import type { AddEnchantmentOptions, SelectedEnchant } from "../type/enchant";
+import { formattedString } from "../utils/foramttedString";
+import { randomInt } from "../utils/random";
+import { useOrbStore } from "./orbStore";
 
 export const useEnchantmentStore = defineStore("enchantment", () => {
   const armorStore = useArmorStore();
+  const orbStore = useOrbStore();
 
   const selectedEnchantments = ref<SelectedEnchant[]>([]);
+  const selectedCurse = ref<SelectedEnchant>();
   const isCurseExist = ref<boolean>(false);
 
   const currentCategory = computed(
@@ -23,48 +28,69 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
   const currentCount = computed(() => selectedEnchantments.value.length);
   const canAddMore = computed(() => currentCount.value < maxEnchantments.value);
 
-
-
   function addEnchantment(options: AddEnchantmentOptions) {
-  const {
-    ench,
-    positionIndex,
-    isCurse = false,
-  } = options;
+    const { ench, positionIndex, isCurse = false } = options;
 
-  // Проверяем общее количество (включая curse, если оно уже есть)
-  if (!canAddMore.value ) {
-    console.warn("Нельзя добавить больше зачарований — лимит достигнут");
-    return;
+    let formattedEnchant = ench.enchant;
+    let rangeValue = 0;
+
+    if (ench.range) {
+      rangeValue = randomInt(ench.range.from, ench.range.to);
+
+      formattedEnchant = formattedString({
+        text: ench.enchant,
+        range: ench.range,
+        percent: ench.percent,
+        isRandomNumber: rangeValue,
+      });
+    }
+
+    if (isCurse) {
+      isCurseExist.value = true;
+
+      selectedCurse.value = {
+        group: ench.group,
+        enchant: formattedEnchant,
+        rangeValue: rangeValue,
+        notFormattedString: ench.enchant,
+      };
+    }
+
+    // Проверяем общее количество (включая curse, если оно уже есть)
+    if (!canAddMore.value) {
+      return;
+    }
+
+    // Проверяем дубликат по enchant
+    if (selectedEnchantments.value.some((e) => e.enchant === ench.enchant)) {
+      return;
+    }
+
+    // Проверяем занятость группы
+    if (selectedEnchantments.value.some((e) => e.group === ench.group)) {
+      return;
+    }
+
+    // Добавляем обычное свойство
+    const newEnchant = {
+      group: ench.group,
+      enchant: formattedEnchant,
+      rangeValue: rangeValue,
+      notFormattedString: ench.enchant,
+      percent: ench.percent,
+      range: ench.range,
+    };
+
+    if (typeof positionIndex === "number" && positionIndex >= 0) {
+      const safeIndex = Math.min(
+        positionIndex,
+        selectedEnchantments.value.length,
+      );
+      selectedEnchantments.value.splice(safeIndex, 0, newEnchant);
+    } else {
+      selectedEnchantments.value.push(newEnchant);
+    }
   }
-
-  // Проверяем дубликат по enchant
-  if (selectedEnchantments.value.some(e => e.enchant === ench.enchant)) {
-    console.warn(`Зачарование "${ench.enchant}" уже существует`);
-    return;
-  }
-
-  // Проверяем занятость группы
-  if (selectedEnchantments.value.some(e => e.group === ench.group)) {
-    console.warn(`Группа "${ench.group}" уже занята`);
-    return;
-  }
-
-  // Добавляем обычное свойство
-  const newEnchant = {
-    group: ench.group,
-    enchant: ench.enchant,
-  };
-
-  if (typeof positionIndex === 'number' && positionIndex >= 0) {
-    const safeIndex = Math.min(positionIndex, selectedEnchantments.value.length);
-    selectedEnchantments.value.splice(safeIndex, 0, newEnchant);
-    console.log(`Обычное свойство добавлено на позицию ${safeIndex}`);
-  } else {
-    selectedEnchantments.value.push(newEnchant);
-    console.log("Обычное свойство добавлено в конец");
-  }
-}
 
   function removeEnchantment(enchantName: string) {
     selectedEnchantments.value = selectedEnchantments.value.filter(
@@ -74,6 +100,8 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
 
   function clearEnchantments() {
     selectedEnchantments.value = [];
+    selectedCurse.value = undefined;
+    isCurseExist.value = false;
   }
 
   return {
@@ -82,6 +110,8 @@ export const useEnchantmentStore = defineStore("enchantment", () => {
     maxEnchantments,
     currentCount,
     canAddMore,
+    isCurseExist,
+    selectedCurse,
 
     addEnchantment,
     removeEnchantment,

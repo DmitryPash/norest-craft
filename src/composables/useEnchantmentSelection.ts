@@ -1,17 +1,22 @@
 import { ref, computed } from "vue";
-import enchantsJson from "../assets/data/ench.json" assert {type: "json"};
+import enchantsJson from "../assets/data/ench.json" assert { type: "json" };
 import { useArmorStore } from "../store/armorStore";
 import type { SelectedEnchant } from "../type/enchant";
 import { useEnchantmentStore } from "../store/enchantmentStore";
 import { partMap } from "../const/Const";
+import { formattedString } from "../utils/foramttedString";
+import { useOrbStore } from "../store/orbStore";
 
 export function useEnchantmentSelection() {
   const armorStore = useArmorStore();
   const enchantmentStore = useEnchantmentStore();
+  const orbStore = useOrbStore();
 
   const currentArmor = computed(() => armorStore.getArmor());
-  const search = ref("");
+  const exaltCount = computed(() => orbStore.exaltedCount)
 
+  console.log("exaltCount - ", exaltCount.value)
+  const search = ref("");
 
   const filteredEnchants = computed(() => {
     const { type, base, enchantment } = currentArmor.value;
@@ -29,7 +34,12 @@ export function useEnchantmentSelection() {
 
     if (!category) return {};
 
-    const result: Record<string, any> = { [catKey]: {} };
+    const result: Record<
+      string,
+      Record<string, Array<SelectedEnchant & { formattedEnchant: string }>>
+    > = {
+      [catKey]: {},
+    };
 
     // Определяем, какие части показывать
     let allowedParts: string[] = [];
@@ -58,7 +68,14 @@ export function useEnchantmentSelection() {
       }
 
       if (list.length > 0) {
-        result[catKey][part] = list;
+        result[catKey][part] = list.map((ench) => ({
+          ...ench,
+          formattedEnchant: formattedString({
+            text: ench.enchant,
+            range: ench.range,
+            percent: ench.percent,
+          }),
+        }));
       }
     }
 
@@ -81,7 +98,10 @@ export function useEnchantmentSelection() {
 
     if (!curseCategory) return {};
 
-    const result: Record<string, Record<string, SelectedEnchant[]>> = {
+    const result: Record<
+      string,
+      Record<string, Array<SelectedEnchant & { formattedEnchant: string }>>
+    > = {
       curse: {},
     };
 
@@ -110,12 +130,25 @@ export function useEnchantmentSelection() {
         list = list.filter(
           (e) =>
             e.enchant.toLowerCase().includes(q) ||
-            e.group.toLowerCase().includes(q)
+            e.group.toLowerCase().includes(q),
         );
       }
 
       if (list.length > 0) {
-        result.curse[part] = list;
+        result.curse[part] = list.map((ench) => ({
+          ...ench,
+          formattedEnchant: formattedString({
+            text: ench.enchant,
+            range: ench.range,
+            percent: ench.percent,
+          }),
+          randomEnchant: formattedString({
+            text: ench.enchant,
+            range: ench.range,
+            percent: ench.percent,
+            isRandomNumber: 99,
+          }),
+        }));
       }
     }
 
@@ -127,33 +160,6 @@ export function useEnchantmentSelection() {
     return result;
   });
 
-  const getEnchantsByGroup = (groupName: string): SelectedEnchant[] => {
-    const enchants: SelectedEnchant[] = [];
-
-    const filtered = filteredEnchants.value;
-    if (!filtered || Object.keys(filtered).length === 0) return enchants;
-
-    // Проходим по всем категориям (обычно одна, но на всякий случай)
-    Object.values(filtered).forEach(categoryObj => {
-      // Проходим по всем частям (helmet, chest и т.д.)
-      Object.values(categoryObj).forEach(partArray => {
-        if (Array.isArray(partArray)) {
-          partArray.forEach(enchant => {
-            if (enchant.group === groupName) {
-              enchants.push(enchant);
-            }
-          });
-        }
-      });
-    });
-
-  return enchants;
-  };
-
-  function removeEnchant(enchantName: string) {
-    enchantmentStore.removeEnchantment(enchantName);
-  }
-
   function addRandomEnchantReplacement(positionIndex?: number) {
     const MAX_ATTEMPTS = 50;
 
@@ -163,8 +169,12 @@ export function useEnchantmentSelection() {
       attempts++;
 
       // 1. Собираем ВСЕ видимые зачарования (из всех групп, всех частей)
-      const allVisible: SelectedEnchant[] = Object.values(filteredEnchants.value)
-        .flatMap((category:Record<string, SelectedEnchant[]>) => Object.values(category))
+      const allVisible: SelectedEnchant[] = Object.values(
+        filteredEnchants.value,
+      )
+        .flatMap((category: Record<string, SelectedEnchant[]>) =>
+          Object.values(category),
+        )
         .flat();
 
       if (allVisible.length === 0) {
@@ -176,6 +186,10 @@ export function useEnchantmentSelection() {
       const randomIndex = Math.floor(Math.random() * allVisible.length);
       const candidate = allVisible[randomIndex];
 
+      if (!candidate.range) {
+        continue;
+      }
+
       // 3. Проверяем, можно ли добавить именно это
       if (!enchantmentStore.canAddMore) {
         return;
@@ -186,33 +200,86 @@ export function useEnchantmentSelection() {
       }
 
       // Уже есть точно такое же зачарование?
-      if (enchantmentStore.selectedEnchantments.some(e => e.enchant === candidate.enchant)) {
+      if (
+        enchantmentStore.selectedEnchantments.some(
+          (e) => e.enchant === candidate.enchant,
+        )
+      ) {
         continue;
       }
 
       // Самое важное: группа уже занята на предмете?
-      if (enchantmentStore.selectedEnchantments.some(e => e.group === candidate.group)) {
+      if (
+        enchantmentStore.selectedEnchantments.some(
+          (e) => e.group === candidate.group,
+        )
+      ) {
         continue;
       }
 
       // Всё ок → добавляем
-      enchantmentStore.addEnchantment({ench: candidate, positionIndex});
+      enchantmentStore.addEnchantment({ ench: candidate, positionIndex });
       return;
     }
-
-    console.warn(`Не удалось подобрать случайное зачарование после ${MAX_ATTEMPTS} попыток (возможно, почти все группы уже заняты)`);
   }
 
   function addRandomCurse() {
-    // ** думаю **//
+    const MAX_ATTEMPTS = 50;
+
+    let attempts = 0;
+
+    while (attempts < MAX_ATTEMPTS) {
+      attempts++;
+
+      // 1. Собираем ВСЕ видимые зачарования только из категории "curse"
+      const curseCategory = curseEnchants.value?.curse;
+
+      if (!curseCategory || Object.keys(curseCategory).length === 0) {
+        return;
+      }
+
+      // Собираем все зачарования из всех частей категории curse
+      const allVisible: SelectedEnchant[] = Object.values(curseCategory).flat();
+
+      if (allVisible.length === 0) {
+        return;
+      }
+
+      // 2. Берём случайное
+      const randomIndex = Math.floor(Math.random() * allVisible.length);
+      const candidate = allVisible[randomIndex];
+
+      // Уже есть точно такое же зачарование? (по enchant)
+      if (
+        enchantmentStore.selectedEnchantments.some(
+          (e) => e.enchant === candidate.enchant,
+        )
+      ) {
+        continue;
+      }
+
+      // Всё ок → добавляем
+      enchantmentStore.addEnchantment({ ench: candidate, isCurse: true });
+      console.log("Добавлено случайное проклятие:", candidate.enchant);
+      return;
+    }
+
+    console.warn(
+      `Не удалось подобрать случайное проклятие после ${MAX_ATTEMPTS} попыток (возможно, все доступные уже выбраны)`,
+    );
+  }
+
+  function removeEnchant(enchantName: string) {
+    enchantmentStore.removeEnchantment(enchantName);
   }
 
   function clearAllEnch() {
     enchantmentStore.clearEnchantments();
+    orbStore.clearOrbStore();
   }
 
   function selectEnchant(ench: SelectedEnchant, isCurse?: boolean) {
-    enchantmentStore.addEnchantment({ench, isCurse});
+    enchantmentStore.addEnchantment({ ench, isCurse });
   }
 
   return {
@@ -220,9 +287,11 @@ export function useEnchantmentSelection() {
     search,
     filteredEnchants,
     curseEnchants,
+    exaltCount,
     selectEnchant,
     removeEnchant,
     addRandomEnchantReplacement,
+    addRandomCurse,
     clearAllEnch,
     enchantmentStore,
   };

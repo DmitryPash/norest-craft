@@ -39,7 +39,7 @@
             class="enchant-item"
             @click="selectEnchant(ench)"
           >
-            <div class="enchant-text">{{ ench.enchant }}</div>
+            <div class="enchant-text">{{ ench.formattedEnchant }}</div>
             <div class="group-text">Группа: {{ ench.group }}</div>
           </div>
         </div>
@@ -76,7 +76,7 @@
             class="enchant-item"
             @click="selectEnchant(curse, true)"
           >
-            <div class="enchant-text">{{ curse.enchant }}</div>
+            <div class="enchant-text">{{ curse.formattedEnchant }}</div>
             <div class="group-text">Группа: {{ curse.group }}</div>
           </div>
         </div>
