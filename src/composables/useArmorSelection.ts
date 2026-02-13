@@ -12,7 +12,7 @@ export function useArmoreSelection() {
     "chest",
     "pants",
     "gloves",
-    "weapone",
+    "weapon",
     "bow",
     "shield",
   ] as const;
